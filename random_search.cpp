@@ -1,11 +1,10 @@
 #include <iostream>
-#include<math.h>
+#include <math.h>
 #include <stdlib.h> 
 #include <vector>
 #include <map>
 
 using namespace std;
-
 
 //algorithm: 
 //   1. create n-dimension vector
@@ -29,7 +28,6 @@ void random_vector(std::vector<std::vector<double>> &mysearch_space, std::vector
 	for(int i = 0; i < problem_size; i++){
 		mynew_vec.push_back(mysearch_space[i][0] + ( (mysearch_space[i][1] - mysearch_space[i][0]) * rand() ) );
 	}
-	return;
 }
 
 std::vector<double> search(std::vector<std::vector<double>> &mysearch_space, int max_iter, int problem_size)
@@ -51,9 +49,9 @@ std::vector<double> search(std::vector<std::vector<double>> &mysearch_space, int
 		results[candidate] = new_vec;
 		if(i == max_iter-1 ){
 		        cout << "best candidate = " << best << "\n";
-		        return results[best];
 		}   
 	}
+	return results[best];
 }
 
 int main()
