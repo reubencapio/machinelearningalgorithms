@@ -47,7 +47,7 @@ std::vector<double> search(std::vector<std::vector<double>> &mysearch_space, int
 		}
 		best = candidate < best? candidate : best;
 		results[candidate] = new_vec;
-		if(i == max_iter-1 ){
+		if(max_iter-1 == i ){
 		        cout << "best candidate = " << best << "\n";
 		}   
 	}
