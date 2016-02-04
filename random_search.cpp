@@ -4,8 +4,6 @@
 #include <vector>
 #include <map>
 
-using namespace std;
-
 //algorithm: 
 //   1. create n-dimension vector
 //   2. create 1 dimension vector with size n using values from n-dimension vector and a random number
@@ -38,17 +36,17 @@ std::vector<double> search(std::vector<std::vector<double>> &mysearch_space, int
 		std::vector<double> new_vec;
 		random_vector(mysearch_space, new_vec, problem_size);
 		for(auto nv: new_vec){
-			cout << "cost member: " << nv << "\n";
+			std::cout << "cost member: " << nv << "\n";
 		}
 		double candidate = objective_function(new_vec);
-		cout << "candidate: " << candidate << "\n\n";
+		std::cout << "candidate: " << candidate << "\n\n";
 		if (0 == best){
 			best = candidate;
 		}
 		best = candidate < best? candidate : best;
 		results[candidate] = new_vec;
 		if(max_iter-1 == i ){
-		        cout << "best candidate = " << best << "\n";
+		        std::cout << "best candidate = " << best << "\n";
 		}   
 	}
 	return results[best];
@@ -61,6 +59,6 @@ int main()
 	int max_iter = 7;
 	std::vector<double> cost = search(search_space, max_iter, problem_size);
 	for(auto m: cost){
-		cout << "best candidate vector values: " << m << "\n";
+		std::cout << "best candidate vector values: " << m << "\n";
 	}
 }
