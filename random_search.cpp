@@ -45,7 +45,7 @@ std::vector<double> search(std::vector<std::vector<double>> &mysearch_space, int
     if (0 == best){
 	best = candidate;
     }
-	//retain the candidate with lowest value from the vectors created from random numbers for max_iter times
+    //retain the candidate with lowest value from the vectors created from random numbers for max_iter times
     best = candidate < best? candidate : best;
     results[candidate] = new_vec;
   		
