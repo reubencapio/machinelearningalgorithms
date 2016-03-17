@@ -38,7 +38,7 @@ std::vector<double> search(std::vector<std::vector<double>> &mysearch_space, int
     for(auto nv: new_vec){
 	std::cout << "cost member: " << nv << "\n";
     }
-	//sum the square of all  vector members
+    //sum the square of all  vector members
     double candidate = objective_function(new_vec);
     std::cout << "candidate: " << candidate << "\n\n";
 	
