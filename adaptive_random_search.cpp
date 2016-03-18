@@ -54,6 +54,7 @@ void take_step(const std::vector<std::vector<double>> &minmax, std::vector<doubl
 //returns a number based on l and s factor
 double large_step_size(const int &iter, const double &step_size, const double &s_factor, const double &l_factor, const int& iter_mult)
 {
+	//if iter is bigger than zero and iter is divisible by 10
 	if (iter>0 && (0 == iter % iter_mult)){
 		return step_size * l_factor;
 	}
@@ -62,7 +63,7 @@ double large_step_size(const int &iter, const double &step_size, const double &s
 	}
 }
 
-
+//assign values to step_cost and big_step_cost
 void take_steps(const std::vector<std::vector<double>> &bounds, std::vector<double> &current_vector, const double &step_size,
 	const double &big_stepsize, double &step_cost, double &big_step_cost, std::vector<double> &step_vector,
 	std::vector<double> big_step_vector, const int &problem_size)
@@ -143,7 +144,3 @@ int main()
 	double best = search(max_iter, bounds, init_factor, s_factor, l_factor, iter_mult, max_no_impr, problem_size);
 	std::cout << "Done. Best Solution: c =" << best << "v = " << "vector result TBD" << "\n";
 }
-
-
-
-
