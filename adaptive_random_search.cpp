@@ -4,6 +4,10 @@
 #include <map>
 #include <random>
 
+//gist
+//same as adaptive search but either big or small step values to find solution
+//so search will be more optimized, as compared to random
+
 //returns a sum of the squared vector contents
 double objective_function(const std::vector<double> &a_vector)
 {
@@ -14,7 +18,7 @@ double objective_function(const std::vector<double> &a_vector)
 	return result;
 }
 
-//return a generated random number based on the min and max of the bounds constants
+//returns a random number based on the min and max of the bounds constants
 double rand_in_bounds(const double &min, const double &max)
 {
 	std::random_device rd;
@@ -41,8 +45,8 @@ void take_step(const std::vector<std::vector<double>> &minmax, std::vector<doubl
 	std::vector<double> &position, int problem_size)
 {
 	for (int i = 0; i < problem_size; i++){
-		//if minmax value(values inside bounds) is bigger than current vector(vector generated with random numbers using bound values as seeds)
-		//use minmax first value as min else use current vector value minux the step size(max bound - min bound * init factor)
+		//if minmax current value(value inside bounds) is bigger than current vector value(vector generated with random numbers using bound values as seeds)
+		//use minmax first value as min else use current vector value minus the step size(max bound - min bound * init factor)
 		double min = minmax[i][0] > current[i] - step_size ? minmax[i][0] : current[i] - step_size;
 		//use current value plus stepsize if minmax value is bigger else use minmax
 		double max = minmax[i][1] > current[i] + step_size ? current[i] + step_size : minmax[i][1];
@@ -75,7 +79,7 @@ void take_steps(const std::vector<std::vector<double>> &bounds, std::vector<doub
 	for each(double member in step_vector){
 		std::cout << member << " , ";
 	}
-	//square vector contents then sum them up
+	//square step_vector contents then sum them up
 	step_cost = objective_function(step_vector);
 	//clear the step_vector so it will only contain two numbers the most
 	step_vector.clear();
@@ -97,15 +101,18 @@ double search(const double &max_iter, const std::vector<std::vector<double>> &bo
 	double count = 0;
 	double dstep_cost;
 	double dbig_step_cost = 0;
+	//fill a vector(current vector) with random numbers based on the min and max seed in the given constant bounds
 	random_vector(bounds, current_vector, problem_size);
+	//initial solution
 	double dcurrent_cost = objective_function(current_vector);
 	std::cout << "dcurrent_cost == " << dcurrent_cost << "\n";
 	for (int i = 0; i <= max_iter; i++){
-		//return step_size multiplied by bigger factor if iteration is bigger than zero and iteration modulo iter_mult(10) is equal to zero
+		//return step_size multiplied by bigger factor if iteration is bigger than zero and iter_mult is divisible by 10
 		double dbig_stepsize = large_step_size(i, dstep_size, s_factor, l_factor, iter_mult);
+		std::cout << "dbig_stepsize :" << dbig_stepsize << "\n";
 		//fill value for dstep_cost  and dbig_step_cost
 		take_steps(bounds, current_vector, dstep_size, dbig_stepsize, dstep_cost, dbig_step_cost, step_vector, big_step_vector, problem_size);
-		//return dcurrent_cost value depending on whif of these values are bigger - dstep_cost or dstep_cost
+		//return dcurrent_cost value depending on which of these values are bigger - dbig_step_cost or dstep_cost
 		if (dstep_cost <= dcurrent_cost || dbig_step_cost <= dcurrent_cost){
 			if (dbig_step_cost <= dstep_cost){
 				dstep_size = dbig_stepsize;
