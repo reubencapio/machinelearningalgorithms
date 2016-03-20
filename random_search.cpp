@@ -4,6 +4,14 @@
 #include <vector>
 #include <map>
 
+//algo gist
+
+//objective function is any random solution function that each set of your data go through 
+//and this function will return a certain value result based on said data set, this returned value is the candidate
+//if the candidate is lesser than the best cost, then it will become the best cost. the goal is to retain
+//the lowest candidate cost
+
+
 //sum the square of all  vector members
 double objective_function(std::vector<double> &mysearch_space)
 {
