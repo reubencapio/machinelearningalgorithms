@@ -42,7 +42,7 @@ void random_vector(const std::vector<std::vector<double>> &minmax, std::vector<d
 
 
 //fill position vector with {problem_size=2} random numbers
-void take_step(const std::vector<std::vector<double>> &minmax, std::vector<double> &current, const double &step_size,
+void take_step(const std::vector<std::vector<double>> &minmax, const std::vector<double> &current, const double &step_size,
 	std::vector<double> &position, int problem_size)
 {
 	for (int i = 0; i < problem_size; i++){
@@ -71,7 +71,7 @@ double large_step_size(const int &iter, const double &step_size, const double &s
 //assign values to step_cost and big_step_cost
 void take_steps(const std::vector<std::vector<double>> &bounds, std::vector<double> &current_vector, const double &step_size,
 	const double &big_stepsize, double &step_cost, double &big_step_cost, std::vector<double> &step_vector,
-	std::vector<double> big_step_vector, const int &problem_size)
+	std::vector<double> &big_step_vector, const int &problem_size)
 {
 	//fill step_vector with two random numbers
 	take_step(bounds, current_vector, step_size, step_vector, problem_size);
@@ -82,8 +82,6 @@ void take_steps(const std::vector<std::vector<double>> &bounds, std::vector<doub
 	}
 	//square step_vector contents then sum them up
 	step_cost = objective_function(step_vector);
-	//clear the step_vector so it will only contain two numbers the most
-	step_vector.clear();
 	std::cout << "\n step_cost = " << step_cost << "\n";
 	//fill big_step_vector vector with {problem_size=2} random numbers
 	take_step(bounds, current_vector, big_stepsize, big_step_vector, problem_size);
@@ -93,10 +91,9 @@ void take_steps(const std::vector<std::vector<double>> &bounds, std::vector<doub
 
 
 double search(const double &max_iter, const std::vector<std::vector<double>> &bounds, const double &init_factor, const double &s_factor,
-	const double &l_factor, const int &iter_mult, const int &max_no_impr, const int &problem_size)
+	const double &l_factor, const int &iter_mult, const int &max_no_impr, const int &problem_size, std::vector<double> &current_vector)
 {
 	double dstep_size = (bounds[0][1] - bounds[0][0]) * init_factor;
-	std::vector<double> current_vector;
 	std::vector<double> step_vector;
 	std::vector<double> big_step_vector;
 	double count = 0;
@@ -108,6 +105,8 @@ double search(const double &max_iter, const std::vector<std::vector<double>> &bo
 	double dcurrent_cost = objective_function(current_vector);
 	std::cout << "dcurrent_cost == " << dcurrent_cost << "\n";
 	for (int i = 0; i <= max_iter; i++){
+		step_vector.clear();
+		big_step_vector.clear();
 		//return step_size multiplied by bigger factor if iteration is bigger than zero and iter_mult is divisible by 10
 		double dbig_stepsize = large_step_size(i, dstep_size, s_factor, l_factor, iter_mult);
 		std::cout << "dbig_stepsize :" << dbig_stepsize << "\n";
@@ -118,9 +117,11 @@ double search(const double &max_iter, const std::vector<std::vector<double>> &bo
 			if (dbig_step_cost <= dstep_cost){
 				dstep_size = dbig_stepsize;
 				dcurrent_cost = dbig_step_cost;
+				current_vector.assign(big_step_vector.begin(), big_step_vector.end());
 			}
 			else{
 				dcurrent_cost = dstep_cost;
+				current_vector.assign(step_vector.begin(), step_vector.end());
 			}
 			count = 0;
 		}
@@ -142,12 +143,16 @@ int main()
 	std::cout << "start \n";
 	const int problem_size = 2;
 	const std::vector<std::vector<double>> bounds{ { -5, 5 }, { -5, 5 } };
-	const double max_iter = 10;
+	const double max_iter = 10000;
 	const double init_factor = 0.05;
 	const double s_factor = 1.3;
 	const double l_factor = 3.0;
 	const int iter_mult = 10;
 	const int max_no_impr = 30;
-	double best = search(max_iter, bounds, init_factor, s_factor, l_factor, iter_mult, max_no_impr, problem_size);
-	std::cout << "Done. Best Solution: c =" << best << "v = " << "vector result TBD" << "\n";
+	std::vector<double> current_vec;
+	double best = search(max_iter, bounds, init_factor, s_factor, l_factor, iter_mult, max_no_impr, problem_size, current_vec);
+	std::cout << "Done. Best Solution: c =" << best << " and vector values are = ";
+	for (auto v : current_vec){
+		std::cout << v << ",";
+	}
 }
