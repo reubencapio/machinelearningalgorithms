@@ -7,6 +7,7 @@
 //gist
 //same as adaptive search but use either big or small step values to find solution
 //so search will be more optimized, as compared to random
+//use big steps first then use smaller ones if no better result is generated for a certain number of steps
 
 //returns a sum of the squared vector contents
 double objective_function(const std::vector<double> &a_vector)
