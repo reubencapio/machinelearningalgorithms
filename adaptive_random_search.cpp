@@ -5,7 +5,7 @@
 #include <random>
 
 //gist
-//same as adaptive search but either big or small step values to find solution
+//same as adaptive search but use either big or small step values to find solution
 //so search will be more optimized, as compared to random
 
 //returns a sum of the squared vector contents
@@ -50,7 +50,7 @@ void take_step(const std::vector<std::vector<double>> &minmax, std::vector<doubl
 		double min = minmax[i][0] > current[i] - step_size ? minmax[i][0] : current[i] - step_size;
 		//use current value plus stepsize if minmax value is bigger else use minmax
 		double max = minmax[i][1] > current[i] + step_size ? current[i] + step_size : minmax[i][1];
-	    //put the min and max values in a vector but multiply them first with random value
+		//put the min and max values in a vector but multiply them first with random value
 		position.push_back(rand_in_bounds(min, max));
 	}
 }
