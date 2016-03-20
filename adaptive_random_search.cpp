@@ -127,7 +127,6 @@ double search(const double &max_iter, const std::vector<std::vector<double>> &bo
 			count += 1;
 			if (count >= max_no_impr){
 				count = 0;
-				dstep_size = 0;
 				dstep_size = dstep_size / s_factor;
 			}
 		}
