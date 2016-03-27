@@ -8,14 +8,14 @@
 
 int euc_2d(const std::vector<int> &c1, const std::vector<int> &c2)
 {
-	int result = round(sqrt(pow((c1[0] - c2[0]), 2) + pow((c1[1] - c2[1]), 2)));
+	int result = (int)round(sqrt(pow((c1[0] - c2[0]), 2) + pow((c1[1] - c2[1]), 2)));
 	return result;
 }
 
 int cost(std::vector<int> &permutation, const std::vector<std::vector<int>> &cities)
 {
 	int distance = 0;
-	for (int i = 0; i < permutation.size(); i++){
+	for (unsigned int i = 0; i < permutation.size(); i++){
 		int c1 = permutation[i];
 		int c2 = (permutation.size() - 1 == i) ? permutation[0] : permutation[i + 1];
 		distance += euc_2d(cities[c1], cities[c2]);
@@ -25,10 +25,10 @@ int cost(std::vector<int> &permutation, const std::vector<std::vector<int>> &cit
 
 void random_permutation(const std::vector<std::vector<int>> &cities, std::vector<int> &perm)
 {
-	for (int i = 0; i < cities.size(); i++){
+	for (unsigned int i = 0; i < cities.size(); i++){
 		perm.push_back(i);
 	}
-	for (int i = 0; i < perm.size(); i++){
+	for (unsigned int i = 0; i < perm.size(); i++){
 
 		std::random_device rd;
 		std::default_random_engine generator(rd());
@@ -41,7 +41,7 @@ void random_permutation(const std::vector<std::vector<int>> &cities, std::vector
 
 void stochastic_two_opt(std::vector<int> &perm, const std::vector<int> &permutation)
 {
-    perm = permutation;
+	perm = permutation;
 	std::random_device rd;
 	std::default_random_engine generator(rd());
 	std::uniform_int_distribution<int> distribution(0, perm.size());
@@ -64,7 +64,7 @@ void stochastic_two_opt(std::vector<int> &perm, const std::vector<int> &permutat
 	}
 }
 
-int local_search(const std::vector<int> &best_vector,  int best_cost, const std::vector<std::vector<int>> &cities, const int max_no_improv)
+int local_search(const std::vector<int> &best_vector, int best_cost, const std::vector<std::vector<int>> &cities, const int max_no_improv)
 {
 	int count = 0;
 	while (count >= max_no_improv){
@@ -75,7 +75,7 @@ int local_search(const std::vector<int> &best_vector,  int best_cost, const std:
 		if (candidate_cost < best_cost){
 			best_cost = candidate_cost;
 		}
-	 }
+	}
 	return best_cost;
 }
 
@@ -94,7 +94,7 @@ int double_bridge_move(std::vector<int> &perm, std::vector<int> &candidate_vecto
 	for (int i = 0; i < pos1; i++){
 		p1 += perm[i];
 	}
-	for (int i = pos3; i < perm.size(); i++){
+	for (unsigned int i = pos3; i < perm.size(); i++){
 		p1 += perm[i];
 	}
 	for (int i = pos2; i < pos3; i++){
@@ -151,7 +151,7 @@ int main()
 	std::vector<int> best_vector;
 	int best = search(berlin52, max_iterations, max_no_improv, best_vector);
 	std::cout << "Done. Best Solution: c= " << best << " best_vector: ";
-	for (auto m : best_vector){ 
+	for (auto m : best_vector){
 		std::cout << m << " ";
 	}
 	std::cout << "\n";
