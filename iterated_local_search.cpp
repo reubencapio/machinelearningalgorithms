@@ -69,20 +69,21 @@ void stochastic_two_opt(std::vector<int> &perm, const std::vector<int> &permutat
 	std::reverse(perm.begin() + c1, perm.begin() + c2);
 }
 
-int local_search(std::vector<int> &best_vector, const std::vector<std::vector<int>> &cities, const int max_no_improv)
+void local_search(std::vector<int> &best_vector, int &best_cost, const std::vector<std::vector<int>> &cities, const int max_no_improv)
 {
 	int count = 0;
-	int best_cost = 0;
+	std::cout << "candidate_cost start-> " << "\n";
 	while (count <= max_no_improv) {
 		std::vector<int> candidate_vector;
 		stochastic_two_opt(candidate_vector, best_vector);
 		int candidate_cost = cost(candidate_vector, cities);
+		std::cout << "candidate_cost: " << candidate_cost << "\n";
 		count = (candidate_cost < best_cost ? 0 : count + 1);
 		if (candidate_cost < best_cost) {
 			best_cost = candidate_cost;
+			best_vector = candidate_vector;
 		}
 	}
-	return best_cost;
 }
 
 void double_bridge_move(const std::vector<int> &perm, std::vector<int> &candidate_vector)
@@ -111,7 +112,7 @@ void double_bridge_move(const std::vector<int> &perm, std::vector<int> &candidat
 	}
 }
 
-int perturbation(const std::vector<std::vector<int>> &cities, const int &best_cost, const std::vector<int> &best_vector, std::vector<int> &candidate_vector)
+int perturbation(const std::vector<std::vector<int>> &cities, const std::vector<int> &best_vector, std::vector<int> &candidate_vector)
 {
 	double_bridge_move(best_vector, candidate_vector);
 	int candidate_cost = cost(candidate_vector, cities);
@@ -122,14 +123,14 @@ int search(const std::vector<std::vector<int>> &cities, const int max_iterations
 {
 	//std::cout << "search() " << "\n";
 	random_permutation(cities, best_vector);
-	cost(best_vector, cities);
+	int best_cost = cost(best_vector, cities);
 	//check why best_cost is always 0
-	int best_cost = local_search(best_vector, cities, max_no_improv);
+	local_search(best_vector, best_cost, cities, max_no_improv);
 	std::cout << "best_cost initial: " << best_cost << "\n";
 	for (int i = 0; i < max_iterations; i++) {
 		std::vector<int> candidate_vector;
-		int candidate_cost = perturbation(cities, best_cost, best_vector, candidate_vector);
-		candidate_cost = local_search(candidate_vector, cities, max_no_improv);
+		int candidate_cost = perturbation(cities, best_vector, candidate_vector);
+		local_search(candidate_vector, candidate_cost, cities, max_no_improv);
 		if (candidate_cost < best_cost) {
 			best_cost = candidate_cost;
 			best_vector.assign(candidate_vector.begin(), candidate_vector.end());
