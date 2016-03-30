@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <functional>
 
-//checked
+//get pythagorean distance between 2 cities
 int euc_2d(const std::vector<int> &c1, const std::vector<int> &c2)
 {
 	//std::cout << "euc_2d() " << "\n";
@@ -13,7 +13,7 @@ int euc_2d(const std::vector<int> &c1, const std::vector<int> &c2)
 	return result;
 }
 
-//checked
+//add up all the distance between cities0 and cities 1 then cities1 and cities2 then cities2 and cities3 and so on
 int cost(const std::vector<int> &permutation, const std::vector<std::vector<int>> &cities)
 {
 	//std::cout << "cost() " << "\n";
@@ -26,7 +26,7 @@ int cost(const std::vector<int> &permutation, const std::vector<std::vector<int>
 	return distance;
 }
 
-//checked
+//create a vector of random numbers from 0 to size of cities
 void random_permutation(const std::vector<std::vector<int>> &cities, std::vector<int> &perm)
 {
 	//std::cout << "random_permutation() " << "\n";
@@ -66,11 +66,23 @@ void stochastic_two_opt(std::vector<int> &perm, const std::vector<int> &permutat
 		std::swap(c1, c2);
 	}
 	//reverse vector values in a certain range
+	for (auto m : perm) {
+		std::cout << m << " ";
+	}
+	std::cout << "\n";
+	std::cout << "c1" << c1 << "\n";
+	std::cout << "c2" << c2 << "\n";
 	std::reverse(perm.begin() + c1, perm.begin() + c2);
+	for (auto m : perm) {
+		std::cout << m << " ";
+	}
+	std::cout << "\n";
+	exit;
 }
 
 void local_search(std::vector<int> &best_vector, int &best_cost, const std::vector<std::vector<int>> &cities, const int max_no_improv)
 {
+	//std::cout << "local_search() " << "\n";
 	int count = 0;
 	std::cout << "candidate_cost start-> " << "\n";
 	while (count <= max_no_improv) {
@@ -88,18 +100,17 @@ void local_search(std::vector<int> &best_vector, int &best_cost, const std::vect
 
 void double_bridge_move(const std::vector<int> &perm, std::vector<int> &candidate_vector)
 {
-	int p1 = 0;
-	int p2 = 0;
+	//std::cout << "double_bridge_move() " << "\n";
 	std::random_device rd;
 	std::default_random_engine generator(rd());
-	std::uniform_int_distribution<int> distribution(0, perm.size() / 4);
+	std::uniform_int_distribution<int> distribution(0, perm.size()/4);
 	//rand_num is a function to generate
 	auto rand_num = std::bind(distribution, generator);
 	int pos1 = (rand_num()) + 1;
 	int pos2 = pos1 + 1 + rand_num();
 	int pos3 = pos2 + 1 + rand_num();
 	for (int i = 0; i < pos1; i++) {
-		p1 += perm[i];
+		candidate_vector.push_back(perm[i]);
 	}
 	for (int i = pos3; i < (int)perm.size(); i++) {
 		candidate_vector.push_back(perm[i]);
@@ -114,6 +125,7 @@ void double_bridge_move(const std::vector<int> &perm, std::vector<int> &candidat
 
 int perturbation(const std::vector<std::vector<int>> &cities, const std::vector<int> &best_vector, std::vector<int> &candidate_vector)
 {
+	//std::cout << "perturbation() " << "\n";
 	double_bridge_move(best_vector, candidate_vector);
 	int candidate_cost = cost(candidate_vector, cities);
 	return candidate_cost;
@@ -122,6 +134,7 @@ int perturbation(const std::vector<std::vector<int>> &cities, const std::vector<
 int search(const std::vector<std::vector<int>> &cities, const int max_iterations, const int max_no_improv, std::vector<int> &best_vector)
 {
 	//std::cout << "search() " << "\n";
+	//create a vector of random numbers from 0 to size of cities
 	random_permutation(cities, best_vector);
 	int best_cost = cost(best_vector, cities);
 	//check why best_cost is always 0
