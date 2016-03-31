@@ -43,7 +43,7 @@ void random_permutation(const std::vector<std::vector<int>> &cities, std::vector
 	}
 }
 
-//checked
+//reverse certain parts of best vector(permutation) from a certain random point to another random point
 void stochastic_two_opt(std::vector<int> &perm, const std::vector<int> &permutation)
 {
 	//std::cout << "stochastic_two_opt " << "\n";
@@ -69,17 +69,12 @@ void stochastic_two_opt(std::vector<int> &perm, const std::vector<int> &permutat
 	for (auto m : perm) {
 		std::cout << m << " ";
 	}
-	std::cout << "\n";
-	std::cout << "c1" << c1 << "\n";
-	std::cout << "c2" << c2 << "\n";
 	std::reverse(perm.begin() + c1, perm.begin() + c2);
-	for (auto m : perm) {
-		std::cout << m << " ";
-	}
-	std::cout << "\n";
-	exit;
 }
 
+//search for distribution of values in the vector which results in lowest cost
+//using stochastic_two_opt as the method to optimize the vector values
+//probably similar to travelling salesman problem
 void local_search(std::vector<int> &best_vector, int &best_cost, const std::vector<std::vector<int>> &cities, const int max_no_improv)
 {
 	//std::cout << "local_search() " << "\n";
@@ -87,10 +82,14 @@ void local_search(std::vector<int> &best_vector, int &best_cost, const std::vect
 	std::cout << "candidate_cost start-> " << "\n";
 	while (count <= max_no_improv) {
 		std::vector<int> candidate_vector;
+		//reverse certain parts of best vector(permutation) from a certain random point to another random point
 		stochastic_two_opt(candidate_vector, best_vector);
+		//get cost of candidate vector
 		int candidate_cost = cost(candidate_vector, cities);
 		std::cout << "candidate_cost: " << candidate_cost << "\n";
+		//stop looking for new candidate cost if no improvement in cost is found in max_no_improv(50)
 		count = (candidate_cost < best_cost ? 0 : count + 1);
+		//retain candidate vector values and its cost when it is lower than current running cost(best_cost)
 		if (candidate_cost < best_cost) {
 			best_cost = candidate_cost;
 			best_vector = candidate_vector;
@@ -98,12 +97,14 @@ void local_search(std::vector<int> &best_vector, int &best_cost, const std::vect
 	}
 }
 
+//split the permutation into 4 parts then reconnect these parts together in different order
+//from travelling salesman problem
 void double_bridge_move(const std::vector<int> &perm, std::vector<int> &candidate_vector)
 {
 	//std::cout << "double_bridge_move() " << "\n";
 	std::random_device rd;
 	std::default_random_engine generator(rd());
-	std::uniform_int_distribution<int> distribution(0, perm.size()/4);
+	std::uniform_int_distribution<int> distribution(0, perm.size() / 4);
 	//rand_num is a function to generate
 	auto rand_num = std::bind(distribution, generator);
 	int pos1 = (rand_num()) + 1;
@@ -123,26 +124,38 @@ void double_bridge_move(const std::vector<int> &perm, std::vector<int> &candidat
 	}
 }
 
+//get cost of double_bridge_move
 int perturbation(const std::vector<std::vector<int>> &cities, const std::vector<int> &best_vector, std::vector<int> &candidate_vector)
 {
 	//std::cout << "perturbation() " << "\n";
+	////split the permutation into 4 parts then reconnect these parts together in different order
 	double_bridge_move(best_vector, candidate_vector);
+	//add up all the distance between cities0 and cities 1 then cities1 and cities2 then cities2 and cities3 and so on
+	//then assign as candidate_cost
 	int candidate_cost = cost(candidate_vector, cities);
 	return candidate_cost;
 }
 
+
+//search for the best cost and best vector
 int search(const std::vector<std::vector<int>> &cities, const int max_iterations, const int max_no_improv, std::vector<int> &best_vector)
 {
 	//std::cout << "search() " << "\n";
 	//create a vector of random numbers from 0 to size of cities
 	random_permutation(cities, best_vector);
+	//get initial cost of first random best_vector
 	int best_cost = cost(best_vector, cities);
-	//check why best_cost is always 0
+	//search for distribution of values in the vector which results in lowest cost for max_no_improv times
+	//using stochastic_two_opt as the method to optimize the vector values
 	local_search(best_vector, best_cost, cities, max_no_improv);
+	//find vector which would result to lowest cost iterated in max_iterations
 	std::cout << "best_cost initial: " << best_cost << "\n";
 	for (int i = 0; i < max_iterations; i++) {
 		std::vector<int> candidate_vector;
+		//get cost and candidate_vector of double_bridge_move
 		int candidate_cost = perturbation(cities, best_vector, candidate_vector);
+		//search for distribution of values in the vector which results in lowest cost
+		//using stochastic_two_opt as the method to optimize the vector values
 		local_search(candidate_vector, candidate_cost, cities, max_no_improv);
 		if (candidate_cost < best_cost) {
 			best_cost = candidate_cost;
