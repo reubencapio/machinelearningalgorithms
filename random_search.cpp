@@ -29,7 +29,6 @@ void random_vector(std::vector<std::vector<double>> &mysearch_space, std::vector
    for(int i = 0; i < problem_size; i++){
 	mynew_vec.push_back(mysearch_space[i][0] + ( (mysearch_space[i][1] - mysearch_space[i][0]) * rand() ) );
    }
-   return;
 }
 
 
