@@ -13,7 +13,7 @@ int euc_2d(const std::vector<int> &c1, const std::vector<int> &c2)
 	return result;
 }
 
-//add up all the distance between cities0 and cities 1 then cities1 and cities2 then cities2 and cities3 and so on
+//add up all the distance between random cities(permutation is used as index)
 int cost(const std::vector<int> &permutation, const std::vector<std::vector<int>> &cities)
 {
 	//std::cout << "cost() " << "\n";
@@ -84,7 +84,7 @@ void local_search(std::vector<int> &best_vector, int &best_cost, const std::vect
 		std::vector<int> candidate_vector;
 		//reverse certain parts of best vector(permutation) from a certain random point to another random point
 		stochastic_two_opt(candidate_vector, best_vector);
-		//get cost of candidate vector
+		//add up all the distance between cities0 and cities 1 then cities1 and cities2 then cities2 and cities3 and so on
 		int candidate_cost = cost(candidate_vector, cities);
 		std::cout << "candidate_cost: " << candidate_cost << "\n";
 		//stop looking for new candidate cost if no improvement in cost is found in max_no_improv(50)
