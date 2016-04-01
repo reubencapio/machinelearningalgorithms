@@ -152,10 +152,15 @@ int search(const std::vector<std::vector<int>> &cities, const int max_iterations
 	std::cout << "best_cost initial: " << best_cost << "\n";
 	for (int i = 0; i < max_iterations; i++) {
 		std::vector<int> candidate_vector;
-		//get cost and candidate_vector of double_bridge_move
+		//perturbation is double_bridge move then cost function
+		//double bridge move will split perm vector into 4 parts then 
+		//reconnect these parts together in different order inside candidate_vector
+		//the add up all the distance between random cities(best_vector is used as index) 
+		//- this will be cost
 		int candidate_cost = perturbation(cities, best_vector, candidate_vector);
 		//search for distribution of values in the vector which results in lowest cost
 		//using stochastic_two_opt as the method to optimize the vector values
+		//reverse certain parts of best vector(permutation) from a certain random point to another random point
 		local_search(candidate_vector, candidate_cost, cities, max_no_improv);
 		if (candidate_cost < best_cost) {
 			best_cost = candidate_cost;
