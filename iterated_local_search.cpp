@@ -97,7 +97,7 @@ void local_search(std::vector<int> &best_vector, int &best_cost, const std::vect
 	}
 }
 
-//split the permutation into 4 parts then reconnect these parts together in different order
+//split perm vector into 4 parts then reconnect these parts together in different order inside candidate_vector
 //from travelling salesman problem
 void double_bridge_move(const std::vector<int> &perm, std::vector<int> &candidate_vector)
 {
