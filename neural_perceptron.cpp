@@ -19,8 +19,9 @@ void random_vector(const std::vector<std::vector<double>> &minmax, std::vector<d
 }
 
 
-void initialize_weights(int problem_size, std::vector<std::vector<double>> &minmax, std::vector<double> &array_new)
+void initialize_weights(int problem_size, std::vector<double> &array_new)
 {
+	std::vector<std::vector<double>> minmax;
 	std::vector<double> in_minmax = { -1.0, 1.0 };
 	for (int i = 0; i < problem_size + 1; i++){
 		minmax.push_back(in_minmax);
@@ -59,8 +60,8 @@ double get_output(std::vector<double> &weights, std::vector<double> &a_vector)
 	return transfer(activation);
 }
 
-void train_weights(std::vector<double> &weights, std::vector<std::vector<double>> &domain, const int num_inputs, 
-	              const int iterations, const double lrate)
+void train_weights(std::vector<double> &weights, std::vector<std::vector<double>> &domain, const int num_inputs,
+	const int iterations, const double lrate)
 {
 	for (int i = 0; i < iterations; i++){
 		double error = 0.0;
@@ -77,13 +78,41 @@ void train_weights(std::vector<double> &weights, std::vector<std::vector<double>
 	}
 }
 
+int test_weights(std::vector<double> &weights, std::vector<std::vector<double>> domain, const int num_inputs)
+{
+	int correct = 0;
+	for (auto pattern : domain){
+		std::vector<double> input_vector;
+		for (int j = 0; j < num_inputs; j++){
+			input_vector.push_back(pattern[j]);
+		}
+		double output = get_output(weights, input_vector);
+		if ((int)output == pattern.back()){
+			correct += 1;
+
+		}
+	}
+	std::cout << "Finished test with a score of: " << correct / domain.size() << "\n";
+	return correct;
+}
+
+void execute(std::vector<std::vector<double>> domain, const int num_inputs, const int iterations, const double learning_rate)
+{
+	std::vector<double> weights;
+	initialize_weights(num_inputs, weights);
+	train_weights(weights, domain, num_inputs, iterations, learning_rate);
+	test_weights(weights, domain, num_inputs);
+}
+
 
 int main()
 {
+	//problem configuration
+	std::vector<std::vector<double>> or_problem = { { 0, 0, 0 }, { 0, 1, 1 }, { 1, 0, 1 }, { 1, 1, 1 } };
 	const int inputs = 2;
-	std::vector<std::vector<double>> minmax;
-	std::vector<double> array_new;
-	double v2 = ((double)rand()) / ((double)RAND_MAX) * 0.9999999999999999 + 0.000000000000001;
-	std::cout << "v2 = " << v2 << "\n";
-	initialize_weights(inputs, minmax, array_new);
+	//algorithm configuration
+	const int iterations = 20;
+	double learning_rate = 0.1;
+	//execute the algorithm
+	execute(or_problem, inputs, iterations, learning_rate);
 }
