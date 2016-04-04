@@ -1,5 +1,5 @@
 #include <iostream>
-#include<math.h>
+#include <cmath>
 #include <stdlib.h> 
 #include <vector>
 #include <map>
@@ -72,9 +72,10 @@ void train_weights(std::vector<double> &weights, std::vector<std::vector<double>
 			}
 			double output = get_output(weights, input);
 			double expected = pattern.back();
-			error += output - expected;
+			error += abs(output - expected);
 			update_weights(num_inputs, weights, input, expected, output, lrate);
 		}
+		std::cout << "epoch: " << i << ", error: " << error << "\n";
 	}
 }
 
@@ -92,7 +93,7 @@ int test_weights(std::vector<double> &weights, std::vector<std::vector<double>> 
 
 		}
 	}
-	std::cout << "Finished test with a score of: " << correct / domain.size() << "\n";
+	std::cout << "Finished test with a score of: " << correct << "/" << domain.size() << "\n";
 	return correct;
 }
 
@@ -102,6 +103,11 @@ void execute(std::vector<std::vector<double>> domain, const int num_inputs, cons
 	initialize_weights(num_inputs, weights);
 	train_weights(weights, domain, num_inputs, iterations, learning_rate);
 	test_weights(weights, domain, num_inputs);
+	std::cout << "weights == ";
+	for (auto w:weights){
+		std::cout << w << " ";
+	}
+	std::cout << "\n";
 }
 
 
