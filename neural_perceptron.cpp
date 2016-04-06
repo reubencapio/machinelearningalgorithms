@@ -13,9 +13,6 @@ void random_vector(const std::vector<std::vector<double>> &minmax, std::vector<d
 	std::uniform_real_distribution<double> distribution(0.000000000000001, 0.999999999999999);
 	auto rand = std::bind(distribution, generator);
 	for (int i = 0; i < (int)minmax.size(); i++){
-		//std::cout << "minmax[i][1] : " << minmax[i][1] << " \n" ;
-		//std::cout << "minmax[i][0] : " << minmax[i][0] << " \n";
-		//std::cout << "rand() : " << rand() << " \n";
 		array_new.push_back(minmax[i][0] + ((minmax[i][1] - minmax[i][0]) * rand()));
 	}
 }
@@ -34,24 +31,14 @@ void initialize_weights(const int problem_size, std::vector<double> &array_new)
 
 //update wights based on input vector, expected value, output value and learning rate, called from train_weights
 void update_weights(const int num_inputs, std::vector<double> &weights, const std::vector<double> &input, const double out_exp,
-	                const double out_act, const double l_rate)
+	const double out_act, const double l_rate)
 {
 	for (int i = 0; i < num_inputs; i++){
-		std::cout << "l_rate: " << l_rate << ",  " << "out_exp: " << out_exp << ",  " << "out_act: " << out_act << ",  " << "input[i]: "
-			      << input[i] << " \n";
 		double temp = weights[i] + l_rate * (out_exp - out_act) * input[i];
-		std::cout << "temp: " << temp << " \n";
 		//bug? wights[0] does not seem to change value
 		weights[i] += l_rate * (out_exp - out_act) * input[i];
-		std::cout << "i: " << i << ",  weights[i]: " << weights[i] << "\n";
 	}
 	weights[num_inputs] += l_rate * (out_exp - out_act) * 1.0;
-	std::cout << "num_inputs: " << num_inputs << ",  weights[num_inputs]: " << weights[num_inputs] << "\n";
-	std::cout << "weights: ";
-	for (auto w : weights){
-		std::cout << w << " ";
-	}
-	std::cout << "\n";
 }
 
 //sum up product of weight and 2 member from domain 2d vector(a_vector)
@@ -103,11 +90,6 @@ void train_weights(std::vector<double> &weights, const std::vector<std::vector<d
 			error += abs(output - expected);
 			//update wights based on input vector, expected value, output value and learning rate
 			update_weights(num_inputs, weights, input, expected, output, lrate);
-			/*std::cout << "weights: ";
-			for (auto w:weights){
-				std::cout << w << " ";
-			}
-			std::cout << "\n";*/
 		}
 		std::cout << "epoch: " << i << ", error: " << error << "\n";
 	}
@@ -137,18 +119,8 @@ void execute(const std::vector<std::vector<double>> domain, const int num_inputs
 	std::vector<double> weights;
 	//intialize a 2 dimension vector with -1.0 and 1 then feed it to random_vector() function, return it as weights
 	initialize_weights(num_inputs, weights);
-	/*std::cout << "weights: ";
-	for (auto m : weights){
-		std::cout << m << " ";
-	}
-	std::cout << "\n";*/
 	train_weights(weights, domain, num_inputs, iterations, learning_rate);
 	test_weights(weights, domain, num_inputs);
-	/*std::cout << "weights == ";
-	for (auto w : weights){
-		std::cout << w << " ";
-	}
-	std::cout << "\n";*/
 }
 
 
