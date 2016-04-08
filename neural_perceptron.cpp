@@ -9,7 +9,9 @@
 //return a vector(with size same as that of problem_size) with random numbers generated using minmax members as basis
 void random_vector(const std::vector<std::vector<double>> &minmax, std::vector<double> &array_new)
 {
-	std::default_random_engine generator;
+	  // Seed with a real random value, if available
+        std::random_device rd;
+        std::default_random_engine generator(rd());
 	std::uniform_real_distribution<double> distribution(0.000000000000001, 0.999999999999999);
 	auto rand = std::bind(distribution, generator);
 	for (int i = 0; i < (int)minmax.size(); i++){
