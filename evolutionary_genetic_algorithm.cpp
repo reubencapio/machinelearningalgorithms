@@ -16,10 +16,13 @@ int onemax(std::vector<std::string> &bitstring)
 
 void random_bitstring(int num_bits, std::vector<std::string> &bitstring)
 {
-  std::default_random_engine generator;
+  // Seed with a real random value, if available
+  std::random_device rd;
+  std::default_random_engine generator(rd());
   std::uniform_real_distribution<double> distribution(0.000000000000000001, 0.99999999999999999);
   auto rand = std::bind(distribution, generator);
   for(int i = 0; i < num_bits; i++){
+	  //std::cout << "rand(): " << rand() << "\n";
 	  rand() < 0.5 ? bitstring.push_back("1") : bitstring.push_back("0"); 
   }
 }
