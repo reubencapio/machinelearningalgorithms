@@ -28,7 +28,7 @@ void random_bitstring(int num_bits, std::vector<std::string> &bitstring)
 }
 
 
-void binary_tournament(std::vector<std::vector<std::string>> &pop)
+int binary_tournament(const std::vector<int> &population_fitness;)
 {
 	std::random_device rd;
 	std::default_random_engine generator(rd());
@@ -42,7 +42,7 @@ void binary_tournament(std::vector<std::vector<std::string>> &pop)
 			break;
 		}
 	}
-	return (pop[i][:fitness] > pop[j][:fitness]) ? pop[i] : pop[j]
+	return (population_fitness[i] > population_fitness[j]) ? population_fitness[i] : population_fitness[j]
 }
 
 def point_mutation(bitstring, rate = 1.0 / bitstring.size)
@@ -79,6 +79,7 @@ double search(const int max_gens, const int num_bits, const int pop_size, const 
 	std::vector<std::string> population_part;
 	std::vector<std::vector<std::string>> population_bitstring;
 	std::vector<int> population_fitness;
+	std::map<std::string,int> population_map;
 
 	
 	for (i = 0; i < pop_size; i++) {
@@ -88,13 +89,14 @@ double search(const int max_gens, const int num_bits, const int pop_size, const 
 
 	
 	for(auto member : population_bitstring){
-		int sum_of_vec = onemax(member);	
+		int sum_of_vec = onemax(member);
+		population_map[member] = sum_of_vec;
 		population_fitness.push_back(sum_of_vec);	
 	}
 	
 		best = population.sort{ | x,y | y[:fitness] <= > x[:fitness] }.first
 		for (int i = 0; i<) {
-			selected = Array.new(pop_size){ | i | binary_tournament(population) }
+			selected = Array.new(pop_size){ | i | binary_tournament(population_fitness) }
 				children = reproduce(selected, pop_size, p_crossover, p_mutation)
 				children.each{ | c | c[:fitness] = onemax(c[:bitstring]) }
 				children.sort!{ | x, y | y[:fitness] <= > x[:fitness]}
