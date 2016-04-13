@@ -4,6 +4,17 @@
 #include <iostream>
 #include <map>
 
+double createRandom(const double min, const double max)
+{
+	double result = 0;
+	std::random_device rd;
+	std::default_random_engine generator(rd());
+	std::uniform_real_distribution<double> distribution(min, max);
+	auto rand = std::bind(distribution, generator);
+	result = rand();
+	return result;
+}
+
 int onemax(std::vector<std::string> &bitstring)
 {
 	int sum = 0;
@@ -17,13 +28,10 @@ int onemax(std::vector<std::string> &bitstring)
 
 void random_bitstring(int num_bits, std::vector<std::string> &bitstring)
 {
-	std::random_device rd;
-	std::default_random_engine generator(rd());
-	std::uniform_real_distribution<double> distribution(0.000000000000000001, 0.99999999999999999);
-	auto rand = std::bind(distribution, generator);
+	const double min = 0.000000000000000001;
+	const double max = 0.999999999999999999;
 	for (int i = 0; i < num_bits; i++) {
-		//std::cout << "rand(): " << rand() << "\n";
-		rand() < 0.5 ? bitstring.push_back("1") : bitstring.push_back("0");
+		rand(min, max) < 0.5 ? bitstring.push_back("1") : bitstring.push_back("0");
 	}
 }
 
@@ -47,55 +55,47 @@ int binary_tournament(const std::vector<int> &population_fitness)
 
 void point_mutation(const std::vector<std::string> &bitstring, std::vector<std::string> &child)
 {
-	double rate = 1.0 / bitstring.size();
-	std::random_device rd;
-	std::default_random_engine generator(rd());
-	std::uniform_real_distribution<double> distribution(0.000000000000000001, 0.99999999999999999);
-	auto rand = std::bind(distribution, generator);
+	const double min = 0.000000000000000001;
+	const double max = 0.999999999999999999;
 	for (int i = 0; i < bitstring.size(); i++) {
 		std::string bit = bitstring[i];
-		child.push_back((rand()<rate) ? ((bit == "1") ? "0" : "1") : bit)
+		child.push_back((rand(min, max)<rate) ? ((bit == "1") ? "0" : "1") : bit)
 	}
 }
 
-void crossover(const std::vector<std::string> &parent1, const std::vector<std::string> &parent2, const double rate, std::vector<std::string> &mixed_parent)
+void crossover(const std::vector<std::string> &parent1, const std::vector<std::string> &parent2, const double rate, std::vector<std::string> &child_bitstring)
 {
-	std::random_device rd;
-	std::default_random_engine generator(rd());
-	std::uniform_real_distribution<double> distribution(0.000000000000000001, 0.99999999999999999);
-	auto rand = std::bind(distribution, generator);
-	if(rand() >= rate){
-		return parent1;
-	} else {
-		std::random_device rd2;
-		std::default_random_engine generator(rd2());
-		std::uniform_real_distribution<double> distribution2(parent1.size() - 2);
-		auto rand = std::bind(distribution, generator);
-		
-		int point = 1 + rand();
+	const double min = 0.000000000000000001;
+	const double max = 0.999999999999999999;
+	if(createRandom(min, max) >= rate){
+		child_bitstring = parent1;
+	} else {		
+		int point = 1 + (int)createRandom(0, parent1.size() - 2);
 		for(int i = 0; i < point; i++){
-			mixed_parent.push_back(parent1[i]);
+			child_bitstring.push_back(parent1[i]);
 		}
 		
 		for(int i = point; i < parent1.size(); i++){
-			mixed_parent.push_back(parent1[i]);
+			child_bitstring.push_back(parent1[i]);
 		}
 	}
 }
 
+
 def reproduce(selected, pop_size, p_cross, p_mutation)
-children = []
-selected.each_with_index do | p1, i |
-p2 = (i.modulo(2) == 0) ? selected[i + 1] : selected[i - 1]
-p2 = selected[0] if i == selected.size - 1
-child = {}
-child[:bitstring] = crossover(p1[:bitstring], p2[:bitstring], p_cross)
-child[:bitstring] = point_mutation(child[:bitstring], p_mutation)
-children << child
-break if children.size >= pop_size
-end
-return children
-end
+{
+	children = []
+	selected.each_with_index do | p1, i |
+		p2 = (i.modulo(2) == 0) ? selected[i + 1] : selected[i - 1]
+		p2 = selected[0] if i == selected.size - 1
+		child = {}
+		child[:bitstring] = crossover(p1[:bitstring], p2[:bitstring], p_cross)
+		child[:bitstring] = point_mutation(child[:bitstring], p_mutation)
+		children << child
+		break if children.size >= pop_size
+	end
+	return children
+}
 
 double search(const int max_gens, const int num_bits, const int pop_size, const double p_crossover, const double p_mutation)
 {
@@ -131,10 +131,10 @@ double search(const int max_gens, const int num_bits, const int pop_size, const 
 				return best
 		}
 
-	int main
-	{
-		//problem configuration
-		const int num_bits = 64;
+int main
+{
+	//problem configuration
+	const int num_bits = 64;
 	//algorithm configuration
 	const int max_gens = 100;
 	const int pop_size = 100;
@@ -143,4 +143,4 @@ double search(const int max_gens, const int num_bits, const int pop_size, const 
 	//execute the algorithm
 	double best = search(max_gens, num_bits, pop_size, p_crossover, p_mutation);
 	std::cout << "done! Solution: f= " << ; //#{best[:fitness]}, s=#{best[:bitstring]}"
-	}
+}
