@@ -82,19 +82,23 @@ void crossover(const std::vector<std::string> &parent1, const std::vector<std::s
 }
 
 
-def reproduce(selected, pop_size, p_cross, p_mutation)
+void reproduce(std::vector<std::vector<std::string>> selected, pop_size, double p_cross, double p_mutation, std::vector<std::vector<std::string>> &children)
 {
-	children = []
-	selected.each_with_index do | p1, i |
-		p2 = (i.modulo(2) == 0) ? selected[i + 1] : selected[i - 1]
-		p2 = selected[0] if i == selected.size - 1
-		child = {}
-		child[:bitstring] = crossover(p1[:bitstring], p2[:bitstring], p_cross)
-		child[:bitstring] = point_mutation(child[:bitstring], p_mutation)
-		children << child
-		break if children.size >= pop_size
-	end
-	return children
+	for(int i = 0; i < selected.size(); i++){
+		std::vector<std::string> p1_bitstring = selected[i];
+		std::vector<std::string> p2_bitstring = ((i % 2) == 0) ? selected[i + 1] : selected[i - 1];
+		if (i == selected.size() - 1){
+			p2_bitstring = selected[0];
+		}
+		std::vector<std::string> start_child_bitstring;
+		std::vector<std::string> end_child_bitstring;
+		crossover(p1_bitstring, p2_bitstring, p_cross, start_child_bitstring)
+		point_mutation(start_child_bitstring, p_mutation, end_child_bitstring)
+		children.push_back(end_child_bitstring);
+		if (children.size() >= pop_size){
+			break;
+		}
+	}
 }
 
 double search(const int max_gens, const int num_bits, const int pop_size, const double p_crossover, const double p_mutation)
