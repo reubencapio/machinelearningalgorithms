@@ -31,7 +31,7 @@ void random_bitstring(int num_bits, std::vector<std::string> &bitstring)
 	const double min = 0.000000000000000001;
 	const double max = 0.999999999999999999;
 	for (int i = 0; i < num_bits; i++) {
-		rand(min, max) < 0.5 ? bitstring.push_back("1") : bitstring.push_back("0");
+		createRandom(min, max) < 0.5 ? bitstring.push_back("1") : bitstring.push_back("0");
 	}
 }
 
@@ -53,13 +53,14 @@ int binary_tournament(const std::vector<int> &population_fitness)
 	return (population_fitness[i] > population_fitness[j]) ? population_fitness[i] : population_fitness[j];
 }
 
-void point_mutation(const std::vector<std::string> &bitstring, std::vector<std::string> &child)
+void point_mutation(const std::vector<std::string> &bitstring, std::vector<std::string> &child, double rate)
 {
+	//double rate = 1 / bitstring.size();
 	const double min = 0.000000000000000001;
 	const double max = 0.999999999999999999;
 	for (int i = 0; i < bitstring.size(); i++) {
 		std::string bit = bitstring[i];
-		child.push_back((rand(min, max)<rate) ? ((bit == "1") ? "0" : "1") : bit)
+		child.push_back((createRandom(min, max) < rate) ? ((bit == "1") ? "0" : "1") : bit);
 	}
 }
 
@@ -67,35 +68,36 @@ void crossover(const std::vector<std::string> &parent1, const std::vector<std::s
 {
 	const double min = 0.000000000000000001;
 	const double max = 0.999999999999999999;
-	if(createRandom(min, max) >= rate){
+	if (createRandom(min, max) >= rate) {
 		child_bitstring = parent1;
-	} else {		
+	}
+	else {
 		int point = 1 + (int)createRandom(0, parent1.size() - 2);
-		for(int i = 0; i < point; i++){
+		for (int i = 0; i < point; i++) {
 			child_bitstring.push_back(parent1[i]);
 		}
-		
-		for(int i = point; i < parent1.size(); i++){
+
+		for (int i = point; i < parent1.size(); i++) {
 			child_bitstring.push_back(parent1[i]);
 		}
 	}
 }
 
 
-void reproduce(std::vector<std::vector<std::string>> selected, pop_size, double p_cross, double p_mutation, std::vector<std::vector<std::string>> &children)
+void reproduce(std::vector<std::vector<std::string>> selected, int pop_size, double p_cross, double p_mutation, std::vector<std::vector<std::string>> &children)
 {
-	for(int i = 0; i < selected.size(); i++){
+	for (int i = 0; i < selected.size(); i++) {
 		std::vector<std::string> p1_bitstring = selected[i];
 		std::vector<std::string> p2_bitstring = ((i % 2) == 0) ? selected[i + 1] : selected[i - 1];
-		if (i == selected.size() - 1){
+		if (i == selected.size() - 1) {
 			p2_bitstring = selected[0];
 		}
 		std::vector<std::string> start_child_bitstring;
 		std::vector<std::string> end_child_bitstring;
-		crossover(p1_bitstring, p2_bitstring, p_cross, start_child_bitstring)
-		point_mutation(start_child_bitstring, p_mutation, end_child_bitstring)
+		crossover(p1_bitstring, p2_bitstring, p_cross, start_child_bitstring);
+		point_mutation(start_child_bitstring, end_child_bitstring, p_mutation);
 		children.push_back(end_child_bitstring);
-		if (children.size() >= pop_size){
+		if (children.size() >= pop_size) {
 			break;
 		}
 	}
@@ -106,10 +108,10 @@ double search(const int max_gens, const int num_bits, const int pop_size, const 
 	std::vector<std::string> population_part;
 	std::vector<std::vector<std::string>> population_bitstring;
 	std::vector<int> population_fitness;
-	std::map<std::string, int> population_map;
+	std::map<std::vector<std::string>, int> population_map;
 
 
-	for (i = 0; i < pop_size; i++) {
+	for (int i = 0; i < pop_size; i++) {
 		random_bitstring(num_bits, population_part);
 		population_bitstring.push_back(population_part);
 	}
@@ -122,20 +124,23 @@ double search(const int max_gens, const int num_bits, const int pop_size, const 
 	}
 
 	best = population.sort{ | x,y | y[:fitness] <= > x[:fitness] }.first
-		for (int i = 0; i<) {
-			selected = Array.new(pop_size){ | i | binary_tournament(population_fitness) }
-				children = reproduce(selected, pop_size, p_crossover, p_mutation)
-				children.each{ | c | c[:fitness] = onemax(c[:bitstring]) }
-				children.sort!{ | x, y | y[:fitness] <= > x[:fitness]}
-			best = children.first if children.first[:fitness] >= best[:fitness]
-				population = children
-				puts " > gen #{gen}, best: #{best[:fitness]}, #{best[:bitstring]}"
-				break if best[:fitness] == num_bits
-				end
-				return best
-		}
 
-int main
+
+	for (int i = 0; i < ) {
+		selected = Array.new(pop_size){ | i | binary_tournament(population_fitness) }
+			children = reproduce(selected, pop_size, p_crossover, p_mutation)
+			children.each{ | c | c[:fitness] = onemax(c[:bitstring]) }
+			children.sort!{ | x, y | y[:fitness] <= > x[:fitness]}
+		best = children.first if children.first[:fitness] >= best[:fitness]
+			population = children
+			puts " > gen #{gen}, best: #{best[:fitness]}, #{best[:bitstring]}"
+			break if best[:fitness] == num_bits
+			end
+			return best
+	}
+}
+
+int main()
 {
 	//problem configuration
 	const int num_bits = 64;
