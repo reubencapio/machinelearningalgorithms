@@ -109,6 +109,7 @@ double search(const int max_gens, const int num_bits, const int pop_size, const 
 	std::vector<std::vector<std::string>> population_bitstring;
 	std::vector<int> population_fitness;
 	std::map<std::vector<std::string>, int> population_map;
+	std::map<int, std::vector<std::string>> best;
 
 
 	for (int i = 0; i < pop_size; i++) {
@@ -116,28 +117,34 @@ double search(const int max_gens, const int num_bits, const int pop_size, const 
 		population_bitstring.push_back(population_part);
 	}
 
-
+	int max_sum_of_vec = 0;
+	std::vector<std::string> best_string;
 	for (auto member : population_bitstring) {
 		int sum_of_vec = onemax(member);
+		if(sum_of_vec > max_sum_of_vec) {
+			max_sum_of_vec = sum_of_vec;
+			best_string = member;
+		}
 		population_map[member] = sum_of_vec;
 		population_fitness.push_back(sum_of_vec);
 	}
+	best[max_sum_of_vec] = best_string;
 
 	best = population.sort{ | x,y | y[:fitness] <= > x[:fitness] }.first
 
 
-	for (int i = 0; i < ) {
-		selected = Array.new(pop_size){ | i | binary_tournament(population_fitness) }
-			children = reproduce(selected, pop_size, p_crossover, p_mutation)
-			children.each{ | c | c[:fitness] = onemax(c[:bitstring]) }
-			children.sort!{ | x, y | y[:fitness] <= > x[:fitness]}
-		best = children.first if children.first[:fitness] >= best[:fitness]
-			population = children
-			puts " > gen #{gen}, best: #{best[:fitness]}, #{best[:bitstring]}"
-			break if best[:fitness] == num_bits
-			end
-			return best
-	}
+		for (int i = 0; i <) {
+			selected = Array.new(pop_size){ | i | binary_tournament(population_fitness) }
+				children = reproduce(selected, pop_size, p_crossover, p_mutation)
+				children.each{ | c | c[:fitness] = onemax(c[:bitstring]) }
+				children.sort!{ | x, y | y[:fitness] <= > x[:fitness]}
+			best = children.first if children.first[:fitness] >= best[:fitness]
+				population = children
+				puts " > gen #{gen}, best: #{best[:fitness]}, #{best[:bitstring]}"
+				break if best[:fitness] == num_bits
+				end
+				return best
+		}
 }
 
 int main()
