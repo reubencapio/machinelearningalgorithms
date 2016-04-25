@@ -130,10 +130,11 @@ double search(const int max_gens, const int num_bits, const int pop_size, const 
 	}
 	best[max_sum_of_vec] = best_string;
 
-
+	std::vector<std::vector<std::string>> selected;
 	for (int i = 0; i < max_gens; i++) {
-		for (auto pop_bitstring_member : population_bitstring) {
-			std::vector<std::vector<std::string>> selected = Array.new(pop_size){ | i | binary_tournament(population_fitness) }
+		for (auto pop_fitness_member : population_fitness) {
+			std::vector<std::string> result = binary_tournament(population_fitness, population_bitstring);
+			selected.push_back(result);
 		}
 			children = reproduce(selected, pop_size, p_crossover, p_mutation)
 			children.each{ | c | c[:fitness] = onemax(c[:bitstring]) }
