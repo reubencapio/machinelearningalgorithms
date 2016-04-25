@@ -121,7 +121,7 @@ double search(const int max_gens, const int num_bits, const int pop_size, const 
 	std::vector<std::string> best_string;
 	for (auto member : population_bitstring) {
 		int sum_of_vec = onemax(member);
-		if(sum_of_vec > max_sum_of_vec) {
+		if (sum_of_vec > max_sum_of_vec) {
 			max_sum_of_vec = sum_of_vec;
 			best_string = member;
 		}
@@ -132,17 +132,19 @@ double search(const int max_gens, const int num_bits, const int pop_size, const 
 
 
 	for (int i = 0; i < max_gens; i++) {
-			selected = Array.new(pop_size){ | i | binary_tournament(population_fitness) }
-				children = reproduce(selected, pop_size, p_crossover, p_mutation)
-				children.each{ | c | c[:fitness] = onemax(c[:bitstring]) }
-				children.sort!{ | x, y | y[:fitness] <= > x[:fitness]}
-			best = children.first if children.first[:fitness] >= best[:fitness]
-				population = children
-				puts " > gen #{gen}, best: #{best[:fitness]}, #{best[:bitstring]}"
-				break if best[:fitness] == num_bits
-				end
-				return best
+		for (auto pop_bitstring_member : population_bitstring) {
+			std::vector<std::vector<std::string>> selected = Array.new(pop_size){ | i | binary_tournament(population_fitness) }
 		}
+			children = reproduce(selected, pop_size, p_crossover, p_mutation)
+			children.each{ | c | c[:fitness] = onemax(c[:bitstring]) }
+			children.sort!{ | x, y | y[:fitness] <= > x[:fitness]}
+		best = children.first if children.first[:fitness] >= best[:fitness]
+			population = children
+			puts " > gen #{gen}, best: #{best[:fitness]}, #{best[:bitstring]}"
+			break if best[:fitness] == num_bits
+			end
+			return best
+	}
 }
 
 int main()
