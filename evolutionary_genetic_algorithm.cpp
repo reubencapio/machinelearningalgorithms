@@ -136,16 +136,24 @@ double search(const int max_gens, const int num_bits, const int pop_size, const 
 			std::vector<std::string> result = binary_tournament(population_fitness, population_bitstring);
 			selected.push_back(result);
 		}
-		std::vector<std::vector<std::string>> children;
-		reproduce(selected, pop_size, p_crossover, p_mutation, children);
+		std::vector<std::vector<std::string>> children_bitstring;
+		std::vector<int> children_fitness;
+		std::map<std::vector<std::string>, int> children_map;
+		reproduce(selected, pop_size, p_crossover, p_mutation, children_bitstring);
 
-		for (auto child : children) {
-			onemax();
+		for (auto child : children_bitstring) {
+			int child_fitness = onemax(child);
+			if (child_fitness > max_sum_of_vec) {
+				max_sum_of_vec = sum_of_vec;
+				best_string = member;
+			}
+			children_fitness.push_back(onemax(child));
+			children_map[child] = child_fitness;
 		}
-		children.each{ | c | c[:fitness] = onemax(c[:bitstring]) }
-
-
+		//TODO: sort children to get biggest value then compare to current best
 		children.sort!{ | x, y | y[:fitness] <= > x[:fitness]}
+
+
 		best = children.first if children.first[:fitness] >= best[:fitness]
 		population = children
 		puts " > gen #{gen}, best: #{best[:fitness]}, #{best[:bitstring]}"
