@@ -109,9 +109,9 @@ double search(const int max_gens, const int num_bits, const int pop_size, const 
 	std::vector<std::string> population_part;
 	std::vector<std::vector<std::string>> population_bitstring;
 	std::vector<int> population_fitness;
-	std::map<std::vector<std::string>, int> population_map;
+	std::map<int, std::vector<std::string>> population_map;
 	std::map<int, std::vector<std::string>> best;
-
+	std::vector<std::vector<std::string>> sorted_best_bitstring;
 	for (int i = 0; i < pop_size; i++) {
 		random_bitstring(num_bits, population_part);
 		population_bitstring.push_back(population_part);
@@ -125,10 +125,17 @@ double search(const int max_gens, const int num_bits, const int pop_size, const 
 			max_sum_of_vec = sum_of_vec;
 			best_string = member;
 		}
-		population_map[member] = sum_of_vec;
+		population_map[sum_of_vec] = member;
 		population_fitness.push_back(sum_of_vec);
 	}
 	best[max_sum_of_vec] = best_string;
+
+	std::sort(population_fitness.rbegin(), population_fitness.rend());   // descending sort
+	for (auto val : population_fitness) {
+		std::vector<std::string> best_string = population_map[val];
+		sorted_best_bitstring.push_back(best_string);
+	}
+
 
 	std::vector<std::vector<std::string>> selected;
 	for (int i = 0; i < max_gens; i++) {
@@ -162,7 +169,7 @@ double search(const int max_gens, const int num_bits, const int pop_size, const 
 			sorted_children_bitstring.push_back(child_string);
 		}
 
-		if (children_fitness[0] > ) {
+		if (children_fitness[0] > population_fitness[0]) {
 
 		}
 
