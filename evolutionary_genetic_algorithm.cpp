@@ -3,6 +3,7 @@
 #include <vector>
 #include <iostream>
 #include <map>
+#include <algorithm>
 
 double createRandom(const double min, const double max)
 {
@@ -111,7 +112,6 @@ double search(const int max_gens, const int num_bits, const int pop_size, const 
 	std::map<std::vector<std::string>, int> population_map;
 	std::map<int, std::vector<std::string>> best;
 
-
 	for (int i = 0; i < pop_size; i++) {
 		random_bitstring(num_bits, population_part);
 		population_bitstring.push_back(population_part);
@@ -137,22 +137,34 @@ double search(const int max_gens, const int num_bits, const int pop_size, const 
 			selected.push_back(result);
 		}
 		std::vector<std::vector<std::string>> children_bitstring;
+		std::vector<std::vector<std::string>> sorted_children_bitstring;
 		std::vector<int> children_fitness;
-		std::map<std::vector<std::string>, int> children_map;
+		std::map<int, std::vector<std::string>> children_map;
 		reproduce(selected, pop_size, p_crossover, p_mutation, children_bitstring);
+		
 
 		for (auto child : children_bitstring) {
 			int child_fitness = onemax(child);
 			if (child_fitness > max_sum_of_vec) {
-				max_sum_of_vec = sum_of_vec;
-				best_string = member;
+				max_sum_of_vec = child_fitness;
+				best_string = child;
 			}
 			children_fitness.push_back(onemax(child));
-			children_map[child] = child_fitness;
+			best[child_fitness] = child;
 		}
 		//TODO: sort children to get biggest value then compare to current best
-		children.sort!{ | x, y | y[:fitness] <= > x[:fitness]}
 
+		std::sort(children_fitness.rbegin(), children_fitness.rend());   // descending sort
+
+
+		for (auto val : children_fitness) {
+			std::vector<std::string> child_string = best[val];
+			sorted_children_bitstring.push_back(child_string);
+		}
+
+		if (children_fitness[0] > ) {
+
+		}
 
 		best = children.first if children.first[:fitness] >= best[:fitness]
 		population = children
