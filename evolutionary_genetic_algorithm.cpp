@@ -93,18 +93,24 @@ void crossover(const std::vector<std::string> &parent1, const std::vector<std::s
 	}
 }
 
-
+//create a vector of vector of strings(children) from output of reproduction of both parents and mutations to the children
 void reproduce(std::vector<std::vector<std::string>> selected, int pop_size, double p_cross, double p_mutation, std::vector<std::vector<std::string>> &children)
 {
 	for (int i = 0; i < selected.size(); i++) {
 		std::vector<std::string> p1_bitstring = selected[i];
-		std::vector<std::string> p2_bitstring = ((i % 2) == 0) ? selected[i + 1] : selected[i - 1];
+		std::vector<std::string> p2_bitstring;
 		if (i == selected.size() - 1) {
 			p2_bitstring = selected[0];
+		} else{
+			p2_bitstring = ((i % 2) == 0) ? selected[i + 1] : selected[i - 1];
 		}
 		std::vector<std::string> start_child_bitstring;
 		std::vector<std::string> end_child_bitstring;
+		//return a vector of string(start_child_bitstring) created from a mix of both parent 
+		//string vectors if random is lesser than rate(p_cross) else return parent1 input vector
 		crossover(p1_bitstring, p2_bitstring, p_cross, start_child_bitstring);
+		//create a child string vector(end_child_bitstring) based on random value generator 
+		//and input bitstring(start_child_bitstring) this serves as mutation function
 		point_mutation(start_child_bitstring, end_child_bitstring, p_mutation);
 		children.push_back(end_child_bitstring);
 		if (children.size() >= pop_size) {
@@ -187,11 +193,11 @@ double search(const int max_gens, const int num_bits, const int pop_size, const 
 		}
 
 		best = children.first if children.first[:fitness] >= best[:fitness]
-		population = children
-		puts " > gen #{gen}, best: #{best[:fitness]}, #{best[:bitstring]}"
-		break if best[:fitness] == num_bits
-		end
-		return best
+			population = children
+			puts " > gen #{gen}, best: #{best[:fitness]}, #{best[:bitstring]}"
+			break if best[:fitness] == num_bits
+			end
+			return best
 	}
 }
 
