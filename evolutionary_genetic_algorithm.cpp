@@ -101,7 +101,7 @@ void reproduce(std::vector<std::vector<std::string>> selected, int pop_size, dou
 		std::vector<std::string> p2_bitstring;
 		if (i == selected.size() - 1) {
 			p2_bitstring = selected[0];
-		} else{
+		}else{
 			p2_bitstring = ((i % 2) == 0) ? selected[i + 1] : selected[i - 1];
 		}
 		std::vector<std::string> start_child_bitstring;
@@ -126,7 +126,7 @@ double search(const int max_gens, const int num_bits, const int pop_size, const 
 	std::vector<int> population_fitness;
 	std::map<int, std::vector<std::string>> population_map;
 	std::map<int, std::vector<std::string>> best_map;
-	std::vector<std::vector<std::string>> sorted_best_bitstring;
+	std::vector<std::vector<std::string>> sorted_population_bitstring;
 
 	//create random bitstring and push them in population_bitstring vector
 	for (int i = 0; i < pop_size; i++) {
@@ -137,7 +137,7 @@ double search(const int max_gens, const int num_bits, const int pop_size, const 
 	int max_sum_of_vec = 0;
 	std::vector<std::string> best_string;
 	//for each population_bitstring vector member, sum the bitstring members
-	//save the member with the highest sum as best
+	//save the member with the highest sum as best(best_string)
 	for (auto member : population_bitstring) {
 		int sum_of_vec = onemax(member);
 		if (sum_of_vec > max_sum_of_vec) {
@@ -147,18 +147,24 @@ double search(const int max_gens, const int num_bits, const int pop_size, const 
 		population_map[sum_of_vec] = member;
 		population_fitness.push_back(sum_of_vec);
 	}
+	//save the best string among the population with its sum
 	best_map[max_sum_of_vec] = best_string;
+	//descending sort the population_fitness
+	std::sort(population_fitness.rbegin(), population_fitness.rend());   
 
-	std::sort(population_fitness.rbegin(), population_fitness.rend());   // descending sort
+	//sort population_bitstring based on fitness 
+	//save values in sorted_population_bitstring
 	for (auto val : population_fitness) {
 		std::vector<std::string> best_string = population_map[val];
-		sorted_best_bitstring.push_back(best_string);
+		sorted_population_bitstring.push_back(best_string);
 	}
 
 
 	std::vector<std::vector<std::string>> selected;
 	for (int i = 0; i < max_gens; i++) {
 		for (auto pop_fitness_member : population_fitness) {
+			//access 2 random places(i and j) from an int vector(population_fitness), if "i" is bigger, 
+			//return population_bitstring vector member "i" else return "j"
 			std::vector<std::string> result = binary_tournament(population_fitness, population_bitstring);
 			selected.push_back(result);
 		}
@@ -166,6 +172,10 @@ double search(const int max_gens, const int num_bits, const int pop_size, const 
 		std::vector<std::vector<std::string>> sorted_children_bitstring;
 		std::vector<int> children_fitness;
 		std::map<int, std::vector<std::string>> children_map;
+
+		//create a vector of vector of strings(children_bitstring) from 
+		//output of reproduction of both parents(selected[i] and selected[i+/-1) and mutations to the children
+		//reproduce function uses point_mutation and crossover function
 		reproduce(selected, pop_size, p_crossover, p_mutation, children_bitstring);
 
 
