@@ -4,6 +4,7 @@
 #include <iostream>
 #include <map>
 #include <algorithm>
+#include <string>
 
 //create and return a random number between min and max inputs
 double createRandom(const double min, const double max)
@@ -48,8 +49,8 @@ std::vector<std::string> binary_tournament(const std::vector<int> &population_fi
 	std::default_random_engine generator(rd());
 	std::uniform_int_distribution<int> distribution(population_fitness.size());
 	auto rand = std::bind(distribution, generator);
-	int i = rand();
-	int j = rand();
+	int i = (int)createRandom(0, (int)population_fitness.size());
+	int j = (int)createRandom(0, (int)population_fitness.size());
 	while (j == i) {
 		j = rand();
 		if (j != i) {
@@ -66,7 +67,7 @@ void point_mutation(const std::vector<std::string> &bitstring, std::vector<std::
 	//double rate = 1 / bitstring.size();
 	const double min = 0.000000000000000001;
 	const double max = 0.999999999999999999;
-	for (int i = 0; i < bitstring.size(); i++) {
+	for (int i = 0; i < (int)bitstring.size(); i++) {
 		std::string bit = bitstring[i];
 		child.push_back((createRandom(min, max) < rate) ? ((bit == "1") ? "0" : "1") : bit);
 	}
@@ -87,7 +88,7 @@ void crossover(const std::vector<std::string> &parent1, const std::vector<std::s
 			child_bitstring.push_back(parent1[i]);
 		}
 
-		for (int i = point; i < parent1.size(); i++) {
+		for (int i = point; i < (int)parent1.size(); i++) {
 			child_bitstring.push_back(parent1[i]);
 		}
 	}
@@ -96,7 +97,7 @@ void crossover(const std::vector<std::string> &parent1, const std::vector<std::s
 //create a vector of vector of strings(children) from output of reproduction of both parents and mutations to the children
 void reproduce(std::vector<std::vector<std::string>> selected, int pop_size, double p_cross, double p_mutation, std::vector<std::vector<std::string>> &children)
 {
-	for (int i = 0; i < selected.size(); i++) {
+	for (int i = 0; i < (int)selected.size(); i++) {
 		std::vector<std::string> p1_bitstring = selected[i];
 		std::vector<std::string> p2_bitstring;
 		if (i == selected.size() - 1) {
@@ -113,7 +114,7 @@ void reproduce(std::vector<std::vector<std::string>> selected, int pop_size, dou
 		//and input bitstring(start_child_bitstring) this serves as mutation function
 		point_mutation(start_child_bitstring, end_child_bitstring, p_mutation);
 		children.push_back(end_child_bitstring);
-		if (children.size() >= pop_size) {
+		if ((int)children.size() >= pop_size) {
 			break;
 		}
 	}
@@ -198,17 +199,23 @@ double search(const int max_gens, const int num_bits, const int pop_size, const 
 			sorted_children_bitstring.push_back(child_string);
 		}
 
-		if (children_fitness[0] > best_string) {
+		if (children_fitness[0] > max_sum_of_vec) {
 			best_string = sorted_children_bitstring[0];
 		}
 
-		best = children.first if children.first[:fitness] >= best[:fitness]
-			population = children
-			puts " > gen #{gen}, best: #{best[:fitness]}, #{best[:bitstring]}"
-			break if best[:fitness] == num_bits
-			end
-			return best
+		population_bitstring = sorted_children_bitstring;
+		std::cout << " > gen # " << i << " best: # " << max_sum_of_vec << " << ";
+		for (auto m : best_string){
+			std::cout << m;
+		}
+		std::cout << "\n";
+
+		if (max_sum_of_vec == num_bits){
+			break;
+		}
+		return max_sum_of_vec;
 	}
+	return max_sum_of_vec; //bug?
 }
 
 int main()
@@ -222,5 +229,5 @@ int main()
 	const double p_mutation = 1.0 / num_bits;
 	//execute the algorithm
 	double best = search(max_gens, num_bits, pop_size, p_crossover, p_mutation);
-	std::cout << "done! Solution: f= " << ; //#{best[:fitness]}, s=#{best[:bitstring]}"
+	std::cout << "done! Solution: f= " << best << " \n";// s=#{best[:bitstring]}"
 }
