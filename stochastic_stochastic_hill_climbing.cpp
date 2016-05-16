@@ -8,6 +8,11 @@
 #include <time.h> 
 #include <string>
 
+//gist:  
+//randomly change values in a binary vector of "1"s and "0"s
+//if that vector has higher number of "1"s than current vector,
+//that vector becomes candidate vector
+//stop after max iterations
 
 //count all the string "1" inside the given vector
 int onemax(const std::vector<std::string> &candidate_vector)
@@ -21,7 +26,7 @@ int onemax(const std::vector<std::string> &candidate_vector)
 	return sum;
 }
 
-//change random values in the vector then sum them up to see if it would result to a more optimized value set
+//change random values in the(mutant) vector 
 void random_neighbor(const std::vector<std::string> &candidate_vector, std::vector<std::string> &mutant)
 {
 	mutant = candidate_vector;
@@ -51,7 +56,7 @@ void random_bitstring(const int num_bits, std::vector<std::string> &candidate_ve
 }
 
 
-
+//output vector with most "1"s in it after max_iterations
 double search(const int max_iterations, const int num_bits)
 {
 	std::vector<std::string> candidate_vector;
@@ -61,20 +66,25 @@ double search(const int max_iterations, const int num_bits)
 		std::cout << mv << " ";
 	}
 	std::cout << "\n";
+	//sum up all "1"s in the candidate_vector vector
 	int candidate_cost = onemax(candidate_vector);
 	std::cout << "candidate_cost " << candidate_cost << "\n";
 	for (int i = 0; i < max_iterations; i++) {
 		const std::vector<std::vector<int>> neighbor;
 		std::vector<std::string> neighbor_vector;
+		//change random values in the candidate_vector vector then put in neighbor_vector
 		random_neighbor(candidate_vector, neighbor_vector);
+		//sum up all "1"s in the neighbor_vector vector
 		int neighbor_cost = onemax(neighbor_vector);
 		std::cout << "neighbor_vector: ";
 		for (auto mv : neighbor_vector) {
 			std::cout << mv << " ";
 		}
 		std::cout << "\n";
+		//compare cost
 		if (neighbor_cost >= candidate_cost) {
 			candidate_cost = neighbor_cost;
+			//neighbor_vector becomes candidate_vector
 			candidate_vector.assign(neighbor_vector.begin(), neighbor_vector.end());
 		}
 		std::cout << "neighbor_cost: " << neighbor_cost << "\n";
@@ -82,6 +92,7 @@ double search(const int max_iterations, const int num_bits)
 			std::cout << mv << " ";
 		}
 		std::cout << "iteration : " << i << "  best= " << candidate_cost << "\n";
+		//break if candidate cost is all "1"s
 		if (candidate_cost == num_bits) {
 			break;
 		}
