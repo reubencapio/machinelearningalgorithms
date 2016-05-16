@@ -9,6 +9,7 @@
 //create and return a random number between min and max inputs
 double createRandom(const double min, const double max)
 {
+	//std::cout << "createRandom \n";
 	double result = 0;
 	std::random_device rd;
 	std::default_random_engine generator(rd());
@@ -22,6 +23,7 @@ double createRandom(const double min, const double max)
 //return sum
 int onemax(std::vector<std::string> &bitstring)
 {
+	//std::cout << "onemax \n";
 	int sum = 0;
 	for (auto bit : bitstring) {
 		if (bit == "1") {
@@ -34,6 +36,7 @@ int onemax(std::vector<std::string> &bitstring)
 //create a string vector fille with random "1"s and "0"s
 void random_bitstring(int num_bits, std::vector<std::string> &bitstring)
 {
+	//std::cout << "random_bitstring \n";
 	const double min = 0.000000000000000001;
 	const double max = 0.999999999999999999;
 	for (int i = 0; i < num_bits; i++) {
@@ -45,18 +48,19 @@ void random_bitstring(int num_bits, std::vector<std::string> &bitstring)
 //return bistring vector member "i" else return "j"
 std::vector<std::string> binary_tournament(const std::vector<int> &population_fitness, const std::vector<std::vector<std::string>> population_bitstring)
 {
-	std::random_device rd;
-	std::default_random_engine generator(rd());
-	std::uniform_int_distribution<int> distribution(population_fitness.size());
-	auto rand = std::bind(distribution, generator);
-	int i = (int)createRandom(0, (int)population_fitness.size());
-	int j = (int)createRandom(0, (int)population_fitness.size());
+	//std::cout << "binary_tournament \n";
+	int i = (int)createRandom(0, (int)population_fitness.size()-1);
+	int j = (int)createRandom(0, (int)population_fitness.size()-1);
 	while (j == i) {
-		j = rand();
+		//std::cout << "j == i "<< "j == "<<j << " " << "i == " << i << "\n";
+		j = (int)createRandom(0, (int)population_fitness.size() - 1);
 		if (j != i) {
 			break;
 		}
 	}
+	//std::cout << "population_fitness.size()" << population_fitness.size() << "\n";
+	//std::cout << "population_bitstring.size()" << population_bitstring.size() << "\n";
+	//std::cout << "j == " << j << " " << "i == " << i << "\n";
 	return (population_fitness[i] > population_fitness[j]) ? population_bitstring[i] : population_bitstring[j];
 }
 
@@ -64,6 +68,7 @@ std::vector<std::string> binary_tournament(const std::vector<int> &population_fi
 //this serves as mutation function
 void point_mutation(const std::vector<std::string> &bitstring, std::vector<std::string> &child, double rate)
 {
+	//std::cout << "point_mutation \n";
 	//double rate = 1 / bitstring.size();
 	const double min = 0.000000000000000001;
 	const double max = 0.999999999999999999;
@@ -77,6 +82,7 @@ void point_mutation(const std::vector<std::string> &bitstring, std::vector<std::
 //else return parent1 input vector
 void crossover(const std::vector<std::string> &parent1, const std::vector<std::string> &parent2, const double rate, std::vector<std::string> &child_bitstring)
 {
+	//std::cout << "crossover \n";
 	const double min = 0.000000000000000001;
 	const double max = 0.999999999999999999;
 	if (createRandom(min, max) >= rate) {
@@ -97,12 +103,14 @@ void crossover(const std::vector<std::string> &parent1, const std::vector<std::s
 //create a vector of vector of strings(children) from output of reproduction of both parents and mutations to the children
 void reproduce(std::vector<std::vector<std::string>> selected, int pop_size, double p_cross, double p_mutation, std::vector<std::vector<std::string>> &children)
 {
+	//std::cout << "reproduce \n";
 	for (int i = 0; i < (int)selected.size(); i++) {
 		std::vector<std::string> p1_bitstring = selected[i];
 		std::vector<std::string> p2_bitstring;
 		if (i == selected.size() - 1) {
 			p2_bitstring = selected[0];
-		}else{
+		}
+		else {
 			p2_bitstring = ((i % 2) == 0) ? selected[i + 1] : selected[i - 1];
 		}
 		std::vector<std::string> start_child_bitstring;
@@ -122,7 +130,7 @@ void reproduce(std::vector<std::vector<std::string>> selected, int pop_size, dou
 
 double search(const int max_gens, const int num_bits, const int pop_size, const double p_crossover, const double p_mutation)
 {
-	std::vector<std::string> population_part;
+	//std::cout << "search \n";
 	std::vector<std::vector<std::string>> population_bitstring;
 	std::vector<int> population_fitness;
 	std::map<int, std::vector<std::string>> population_map;
@@ -131,27 +139,31 @@ double search(const int max_gens, const int num_bits, const int pop_size, const 
 
 	//create random bitstring and push them in population_bitstring vector
 	for (int i = 0; i < pop_size; i++) {
+		std::vector<std::string> population_part;
 		random_bitstring(num_bits, population_part);
 		population_bitstring.push_back(population_part);
 	}
-
+	std::cout << "population_bitstring.size() == " << population_bitstring.size() << "\n";
 	int max_sum_of_vec = 0;
 	std::vector<std::string> best_string;
 	//for each population_bitstring vector member, sum the bitstring members
 	//save the member with the highest sum as best(best_string)
 	for (auto member : population_bitstring) {
+		std::cout << "member.size() == " << member.size() << "\n";
 		int sum_of_vec = onemax(member);
+		std::cout << "sum_of_vec == " << sum_of_vec << "\n";
 		if (sum_of_vec > max_sum_of_vec) {
 			max_sum_of_vec = sum_of_vec;
 			best_string = member;
 		}
+		std::cout << "max_sum_of_vec == " << max_sum_of_vec << "\n";
 		population_map[sum_of_vec] = member;
 		population_fitness.push_back(sum_of_vec);
 	}
 	//save the best string among the population with its sum
 	best_map[max_sum_of_vec] = best_string;
 	//descending sort the population_fitness
-	std::sort(population_fitness.rbegin(), population_fitness.rend());   
+	std::sort(population_fitness.rbegin(), population_fitness.rend());
 
 	//sort population_bitstring based on fitness 
 	//save values in sorted_population_bitstring
@@ -166,7 +178,7 @@ double search(const int max_gens, const int num_bits, const int pop_size, const 
 		for (auto pop_fitness_member : population_fitness) {
 			//access 2 random places(i and j) from an int vector(population_fitness), if "i" is bigger, 
 			//return population_bitstring vector member "i" else return "j"
-			std::vector<std::string> result = binary_tournament(population_fitness, population_bitstring);
+			std::vector<std::string> result = binary_tournament(population_fitness, sorted_population_bitstring);
 			selected.push_back(result);
 		}
 		std::vector<std::vector<std::string>> children_bitstring;
@@ -205,15 +217,14 @@ double search(const int max_gens, const int num_bits, const int pop_size, const 
 
 		population_bitstring = sorted_children_bitstring;
 		std::cout << " > gen # " << i << " best: # " << max_sum_of_vec << " << ";
-		for (auto m : best_string){
+		/*for (auto m : best_string) {
 			std::cout << m;
-		}
+		}*/
 		std::cout << "\n";
 
-		if (max_sum_of_vec == num_bits){
+		if (max_sum_of_vec == num_bits) {
 			break;
 		}
-		return max_sum_of_vec;
 	}
 	return max_sum_of_vec; //bug?
 }
