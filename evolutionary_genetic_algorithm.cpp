@@ -174,6 +174,7 @@ double search(const int max_gens, const int num_bits, const int pop_size, const 
 			selected.push_back(result);
 		}
 
+		std::vector<int> children_fitness_vector;
 		std::vector<std::vector<std::string>> children_bitstring_vector;
 		std::vector<std::vector<std::string>> sorted_children_bitstring_vector;
 		std::vector<std::pair<int, std::vector<std::string>>> children_map_vector;
@@ -185,6 +186,7 @@ double search(const int max_gens, const int num_bits, const int pop_size, const 
 
 		for (auto child_string : children_bitstring_vector) {
 			int child_fitness = onemax(child_string);
+			children_fitness_vector.push_back(child_fitness);
 			//std::cout << "child_fitness: " << child_fitness << "\n";
 			std::pair<int, std::vector<std::string>> children_pair(child_fitness, child_string);
 			children_map_vector.push_back(children_pair);
@@ -192,6 +194,7 @@ double search(const int max_gens, const int num_bits, const int pop_size, const 
 
 		// descending sort
 		std::sort(children_map_vector.rbegin(), children_map_vector.rend());
+		std::sort(children_fitness_vector.rbegin(), children_fitness_vector.rend());
 
 		for (auto m : children_map_vector) {
 			std::pair<int, std::vector<std::string>> children_pair = m;
@@ -199,15 +202,6 @@ double search(const int max_gens, const int num_bits, const int pop_size, const 
 		}
 
 		
-		/*for (auto x: sorted_children_bitstring_vector) {
-			int fitness = onemax(x);
-			for (auto y: x) {
-				std::cout << y;
-			}
-			std::cout << " = " << fitness << "\n";
-		}*/
-
-
 		std::pair<int, std::vector<std::string>> children_pair = children_map_vector.front();
 		std::cout << "children_pair.first: " << children_pair.first << "\n";
 		//std::cout << "best_pair.first: " << best_pair.first << "\n";
@@ -217,6 +211,8 @@ double search(const int max_gens, const int num_bits, const int pop_size, const 
 		}
 
 		sorted_population_bitstring_vector = sorted_children_bitstring_vector;
+		population_fitness_vector = children_fitness_vector;
+
 		std::cout << " > gen # " << i << " best: # " << best_pair.first << " << ";
 		for (auto m : best_pair.second) {
 			std::cout << m;
