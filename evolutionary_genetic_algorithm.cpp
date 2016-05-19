@@ -5,6 +5,7 @@
 #include <map>
 #include <algorithm>
 #include <string>
+//#include <cstdlib>
 
 //create and return a random number between min and max inputs
 double createRandom(const double min, const double max)
@@ -130,49 +131,44 @@ double search(const int max_gens, const int num_bits, const int pop_size, const 
 	//std::cout << "search \n";
 	std::vector<std::vector<std::string>> population_bitstring_vector;
 	std::vector<int> population_fitness_vector;
-	std::multimap<int, std::vector<std::string>> population_multimap;
 	std::vector<std::vector<std::string>> sorted_population_bitstring_vector;
 	std::vector<std::pair<int, std::vector<std::string>>> population_map_vector;
-	std::vector<std::string> best_vector;
 
-	//create random bitstring and push them in population_bitstring_vector vector
+	//create random bitstrings and push them in population_bitstring_vector
 	for (int i = 0; i < pop_size; i++) {
 		std::vector<std::string> population_part;
 		random_bitstring(num_bits, population_part);
 		population_bitstring_vector.push_back(population_part);
 	}
-	int max_sum_of_vec = 0;
-	std::vector<std::string> best_string;
 
-	//for each population_bitstring_vector vector member, sum the bitstring members
+	//for each population_bitstring_vector member, sum the bitstring "1" members
 	for (auto member : population_bitstring_vector) {
 		int sum_of_vec = onemax(member);
-		std::cout << "sum_of_vec: " << sum_of_vec << "\n";
+		//std::cout << "sum_of_vec: " << sum_of_vec << "\n";
 		population_fitness_vector.push_back(sum_of_vec);
+		//KEY, VALUE
 		std::pair<int, std::vector<std::string>> population_pair(sum_of_vec, member);
 		population_map_vector.push_back(population_pair);
 	}
-	//descending sort
+	//descending sort according to KEY
 	std::sort(population_map_vector.rbegin(), population_map_vector.rend());
-	//descending sort 
 	std::sort(population_fitness_vector.rbegin(), population_fitness_vector.rend());
-	std::cout << "population_fitness_vector.front(): " << population_fitness_vector.front() << "\n";
-	//sort population_bitstring_vector based on fitness 
+
+	//descending sort population_map_vector KEY values
 	//save values in sorted_population_bitstring_vector
 	for (auto m : population_map_vector) {
 		std::pair<int, std::vector<std::string>> population_pair = m;
 		sorted_population_bitstring_vector.push_back(population_pair.second);
 	}
 
-	//save the member with the highest sum as best(best_string)
+	//save the pair with the highest sum of "1"s as best_pair
 	std::pair<int, std::vector<std::string>> best_pair = population_map_vector.front();
-	std::cout << "best_pair.second: " << best_pair.first << "\n";
-
+	//std::cout << "best_pair.second: " << best_pair.first << "\n";
 	std::vector<std::vector<std::string>> selected;
 
 	for (int i = 0; i < max_gens; i++) {
 		//access 2 random places(i and j) from an int vector(population_fitness_vector), if "i" is bigger, 
-		//return population_bitstring_vector vector member "i" else return "j"
+		//return population_bitstring_vector member "i" as result else return "j"
 		for (int j = 0; j < (int)sorted_population_bitstring_vector.size(); j++) {
 			std::vector<std::string> result = binary_tournament(population_fitness_vector, sorted_population_bitstring_vector);
 			selected.push_back(result);
@@ -180,8 +176,6 @@ double search(const int max_gens, const int num_bits, const int pop_size, const 
 
 		std::vector<std::vector<std::string>> children_bitstring_vector;
 		std::vector<std::vector<std::string>> sorted_children_bitstring_vector;
-		std::vector<int> children_fitness;
-		std::map<int, std::vector<std::string>> children_map;
 		std::vector<std::pair<int, std::vector<std::string>>> children_map_vector;
 
 		//create a vector of vector of strings(children_bitstring_vector) from 
@@ -191,7 +185,7 @@ double search(const int max_gens, const int num_bits, const int pop_size, const 
 
 		for (auto child_string : children_bitstring_vector) {
 			int child_fitness = onemax(child_string);
-			std::cout << "child_fitness: " << child_fitness << "\n";
+			//std::cout << "child_fitness: " << child_fitness << "\n";
 			std::pair<int, std::vector<std::string>> children_pair(child_fitness, child_string);
 			children_map_vector.push_back(children_pair);
 		}
@@ -204,11 +198,22 @@ double search(const int max_gens, const int num_bits, const int pop_size, const 
 			sorted_children_bitstring_vector.push_back(children_pair.second);
 		}
 
+		
+		/*for (auto x: sorted_children_bitstring_vector) {
+			int fitness = onemax(x);
+			for (auto y: x) {
+				std::cout << y;
+			}
+			std::cout << " = " << fitness << "\n";
+		}*/
+
+
 		std::pair<int, std::vector<std::string>> children_pair = children_map_vector.front();
 		std::cout << "children_pair.first: " << children_pair.first << "\n";
-		std::cout << "best_pair.first: " << best_pair.first << "\n";
+		//std::cout << "best_pair.first: " << best_pair.first << "\n";
 		if (children_pair.first > best_pair.first) {
 			best_pair.first = children_pair.first;
+			best_pair.second = children_pair.second;
 		}
 
 		sorted_population_bitstring_vector = sorted_children_bitstring_vector;
