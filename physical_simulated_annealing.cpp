@@ -5,6 +5,17 @@
 #include <algorithm>
 #include <functional>
 
+double rand_in_bounds(const double &min, const double &max)
+{
+	std::random_device rd;
+	std::default_random_engine generator(rd());
+	//0.1 and 0.9 used to generate random numbers just between those 2 decimals
+	//based on c++11 style
+	std::uniform_real_distribution<double> distribution(0.1, 0.9);
+	double random_num = distribution(generator);
+	return min + ((max - min) * random_num);
+}
+
 //get pythagorean distance between 2 cities
 int euc_2d(const std::vector<int> &c1, const std::vector<int> &c2)
 {
@@ -47,7 +58,7 @@ void random_permutation(const std::vector<std::vector<int>> &cities, std::vector
 
 
 //reverse certain parts of best vector(permutation) from a certain random point to another random point
-void stochastic_two_opt(std::vector<int> &perm, const std::vector<int> &permutation)
+void stochastic_two_opt(const std::vector<int> &permutation, std::vector<int> &perm)
 {
 	//std::cout << "stochastic_two_opt " << "\n";
 	perm = permutation;
@@ -77,20 +88,28 @@ void stochastic_two_opt(std::vector<int> &perm, const std::vector<int> &permutat
 
 
 
-def create_neighbor(current, cities)
-  candidate = {}
-  candidate[:vector] = Array.new(current[:vector])
-  stochastic_two_opt!(candidate[:vector])
-  candidate[:cost] = cost(candidate[:vector], cities)
-  return candidate
-end
+int create_neighbor(const std::vector<int> &current_vector, const std::vector<std::vector<int>> &cities)
+{
+  std::vector<int> candidate_vector;
+  int candidate_cost; 
+  candidate_vector = current_vector;
+  std::vector<int> candidate_vector_modified;
+  stochastic_two_opt(candidate_vector, candidate_vector_modified);
+  candidate_cost = cost(candidate_vector_modified, cities);
+  return candidate_cost;
+}
 
-def should_accept?(candidate, current, temp)
-  return true if candidate[:cost] <= current[:cost]
-  return Math.exp((current[:cost] - candidate[:cost]) / temp) > rand()
-end
+bool should_accept(const int candidate_cost, const int current_cost, const int &temp)
+{
+  if (candidate_cost <= current_cost){
+	  return true;
+  }
+  return (exp(current_cost - candidate_cost) / temp) > rand_in_bounds(0.1,0.9);
+}
 
-def search(cities, max_iter, max_temp, temp_change)
+
+double search(cities, max_iter, max_temp, temp_change)
+{
   current = {:vector=>random_permutation(cities)}
   current[:cost] = cost(current[:vector], cities)
   temp, best = max_temp, current
@@ -104,7 +123,7 @@ def search(cities, max_iter, max_temp, temp_change)
     end
   end
   return best
-end
+}
 
 int main()
 {
