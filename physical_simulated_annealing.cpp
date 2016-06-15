@@ -90,39 +90,44 @@ void stochastic_two_opt(const std::vector<int> &permutation, std::vector<int> &p
 
 int create_neighbor(const std::vector<int> &current_vector, const std::vector<std::vector<int>> &cities)
 {
-  std::vector<int> candidate_vector;
-  int candidate_cost; 
-  candidate_vector = current_vector;
-  std::vector<int> candidate_vector_modified;
-  stochastic_two_opt(candidate_vector, candidate_vector_modified);
-  candidate_cost = cost(candidate_vector_modified, cities);
-  return candidate_cost;
+	std::vector<int> candidate_vector;
+	int candidate_cost;
+	candidate_vector = current_vector;
+	std::vector<int> candidate_vector_modified;
+	stochastic_two_opt(candidate_vector, candidate_vector_modified);
+	candidate_cost = cost(candidate_vector_modified, cities);
+	return candidate_cost;
 }
 
 bool should_accept(const int candidate_cost, const int current_cost, const int &temp)
 {
-  if (candidate_cost <= current_cost){
-	  return true;
-  }
-  return (exp(current_cost - candidate_cost) / temp) > rand_in_bounds(0.1,0.9);
+	if (candidate_cost <= current_cost) {
+		return true;
+	}
+	return (exp(current_cost - candidate_cost) / temp) > rand_in_bounds(0.1, 0.9);
 }
 
 
-double search(cities, max_iter, max_temp, temp_change)
+int search(const std::vector<std::vector<int>> cities, const int max_iter, const double max_temp, const double temp_change)
 {
-  current = {:vector=>random_permutation(cities)}
-  current[:cost] = cost(current[:vector], cities)
-  temp, best = max_temp, current
-  max_iter.times do |iter|
-    candidate = create_neighbor(current, cities)
-    temp = temp * temp_change
-    current = candidate if should_accept?(candidate, current, temp)
-    best = candidate if candidate[:cost] < best[:cost]
-    if (iter+1).modulo(10) == 0
-      puts " > iteration #{(iter+1)}, temp=#{temp}, best=#{best[:cost]}"
-    end
-  end
-  return best
+
+	std::vector<int> current_vector;
+	int current_cost = 0;
+	int best_cost = 0;
+	random_permutation(cities, current_vector);
+	current_cost = cost(current_vector, cities);
+	double temp = max_temp;
+	best_cost = current_cost;
+	for (int i = 0; i < max_iter; i++) {
+		int candidate = create_neighbor(current_vector, cities);
+		temp = temp * temp_change;
+		current = candidate if should_accept ? (candidate, current, temp)
+		best = candidate if candidate[:cost] < best[:cost]
+		if ((iter + 1).modulo(10) == 0) {
+			puts " > iteration #{(iter+1)}, temp=#{temp}, best=#{best[:cost]}"
+		 }
+	}
+    return best_cost;
 }
 
 int main()
