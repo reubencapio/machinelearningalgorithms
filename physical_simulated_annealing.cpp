@@ -80,20 +80,16 @@ void stochastic_two_opt(const std::vector<int> &permutation, std::vector<int> &p
 		std::swap(c1, c2);
 	}
 	//reverse vector values in a certain range
-	for (auto m : perm) {
-		std::cout << m << " ";
-	}
 	std::reverse(perm.begin() + c1, perm.begin() + c2);
 }
 
 
 
-int create_neighbor(const std::vector<int> &current_vector, const std::vector<std::vector<int>> &cities)
+int create_neighbor(const std::vector<int> &current_vector, const std::vector<std::vector<int>> &cities, std::vector<int> &candidate_vector_modified)
 {
 	std::vector<int> candidate_vector;
 	int candidate_cost;
 	candidate_vector = current_vector;
-	std::vector<int> candidate_vector_modified;
 	stochastic_two_opt(candidate_vector, candidate_vector_modified);
 	candidate_cost = cost(candidate_vector_modified, cities);
 	return candidate_cost;
@@ -108,7 +104,7 @@ bool should_accept(const int candidate_cost, const int current_cost, const int &
 }
 
 
-int search(const std::vector<std::vector<int>> cities, const int max_iter, const double max_temp, const double temp_change)
+int search(const std::vector<std::vector<int>> cities, const int max_iter, const double max_temp, const double temp_change, std::vector<int> &best_vector)
 {
 
 	std::vector<int> current_vector;
@@ -118,16 +114,25 @@ int search(const std::vector<std::vector<int>> cities, const int max_iter, const
 	current_cost = cost(current_vector, cities);
 	double temp = max_temp;
 	best_cost = current_cost;
+	std::vector<int> candidate_vector;
+
 	for (int i = 0; i < max_iter; i++) {
-		int candidate = create_neighbor(current_vector, cities);
+		int candidate_cost = create_neighbor(current_vector, cities, candidate_vector);
 		temp = temp * temp_change;
-		current = candidate if should_accept ? (candidate, current, temp)
-		best = candidate if candidate[:cost] < best[:cost]
-		if ((iter + 1).modulo(10) == 0) {
-			puts " > iteration #{(iter+1)}, temp=#{temp}, best=#{best[:cost]}"
-		 }
+		bool isAccepted = should_accept(candidate_cost, current_cost, temp);
+		if (isAccepted) {
+			current_cost = candidate_cost;
+			current_vector = candidate_vector;
+		}
+		if (candidate_cost < best_cost) {
+			best_cost = candidate_cost;
+			best_vector = candidate_vector;
+		}
+		if ( (i + 1) % (10) == 0 ) {
+			std::cout << " > iteration # " << i + 1 << " temp=# " << temp  <<  " , best=# " << best_cost << " \n";
+		}
 	}
-    return best_cost;
+	return best_cost;
 }
 
 int main()
@@ -145,7 +150,7 @@ int main()
 	//algorithm configuration
 	const int max_iterations = 2000;
 	const double max_temp = 100000.0;
-	const double temp_change = 0.98
+	const double temp_change = 0.98;
 	//execute the algorithm
 	std::vector<int> best_vector;
 	int best_cost = search(berlin52, max_iterations, max_temp, temp_change, best_vector);
