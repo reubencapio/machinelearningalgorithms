@@ -1,1 +1,1 @@
-# machinelearningalgorithms - this is a C++ port based on the book Clever Algorithms by Jason Brownlee
+# machinelearningalgorithms - this is a Ruby to C++ port of algorithms in the book Clever Algorithms by Jason Brownlee
